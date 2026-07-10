@@ -1,27 +1,11 @@
-// @ts-nocheck
 'use client';
 
-import { useState, useEffect } from 'react';
 import NavigationBar from '@/components/NavigationBar';
 import Footer from '@/components/Footer';
+import { usePayments } from '@/lib/hooks/usePayments';
+import { useRevealAnimation } from '@/lib/hooks/useRevealAnimation';
 
-export default function Payments() {
-  const [payments, setPayments] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Mock data load
-  useEffect(() => {
-    setTimeout(() => {
-      setPayments([
-        { id: 1, projectName: 'Pondasi Gudang Logistik', projectId: 1, day: 3, amount: '0.010', timestamp: '15 Jan 2024, 16:30 WIB', status: 'success', txHash: '0x7f3a...8a21' },
-        { id: 2, projectName: 'Pondasi Gudang Logistik', projectId: 1, day: 2, amount: '0.010', timestamp: '14 Jan 2024, 15:45 WIB', status: 'success', txHash: '0x8b2c...3d45' },
-        { id: 3, projectName: 'Pondasi Gudang Logistik', projectId: 1, day: 1, amount: '0.010', timestamp: '13 Jan 2024, 14:20 WIB', status: 'success', txHash: '0x9d4e...5f67' },
-        { id: 4, projectName: 'Renovasi Ruko Blok A', projectId: 2, day: 1, amount: '0.015', timestamp: '12 Jan 2024, 17:00 WIB', status: 'success', txHash: '0xa1b2...c3d4' },
-        { id: 5, projectName: 'Pondasi Gudang Logistik', projectId: 1, day: 4, amount: '0.010', timestamp: '16 Jan 2024, 15:30 WIB', status: 'pending', txHash: 'Menunggu verifikasi...' },
-      ]);
-      setLoading(false);
-    }, 500);
-  }, []);
+import Iconify from '@/components/Iconify';
 
   // Re-observe when loading finishes
   useEffect(() => {
