@@ -97,24 +97,48 @@ export default function MyWork() {
                       </div>
                       <h3 className="text-xl font-semibold mb-2">{project.name}</h3>
                       <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 mb-4">
-                        <div className="flex items-center gap-1"><iconify-icon icon="lucide:map-pin" class="text-[#FF4500]" /><span>{project.location}</span></div>
-                        <div className="flex items-center gap-1"><iconify-icon icon="lucide:user" class="text-[#FF4500]" /><span>Kontraktor: {project.kontraktor}</span></div>
-                        <div className="flex items-center gap-1"><iconify-icon icon="lucide:clock" class="text-[#FF4500]" /><span>Bukti terakhir: {project.lastProof}</span></div>
+                        <div className="flex items-center gap-1">
+                          <Iconify icon="lucide:map-pin" className="text-[#FF4500]" />
+                          <span>{project.location}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Iconify icon="lucide:user" className="text-[#FF4500]" />
+                          <span>Kontraktor: {project.kontraktor}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Iconify icon="lucide:clock" className="text-[#FF4500]" />
+                          <span>Bukti terakhir: {project.lastProof}</span>
+                        </div>
                       </div>
                       <div className="max-w-md">
-                        <div className="flex justify-between text-xs mb-1.5"><span className="text-gray-500 uppercase tracking-widest font-bold">Progres Hari</span><span className="text-white">{project.daysCompleted} / {project.durationDays}</span></div>
-                        <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-[#FF4500] rounded-full" style={{ width: `${progress}%` }} /></div>
+                        <div className="flex justify-between text-xs mb-1.5">
+                          <span className="text-gray-500 uppercase tracking-widest font-bold">Progres Hari</span>
+                          <span className="text-white">{project.daysCompleted} / {project.durationDays}</span>
+                        </div>
+                        <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                          <div className="h-full bg-[#FF4500] rounded-full" style={{ width: `${progress}%` }} />
+                        </div>
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-4 md:min-w-[200px]">
                       <div className="grid grid-cols-2 gap-4 w-full">
-                        <div className="p-3 rounded-2xl bg-white/5 border border-white/5 text-center"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Tarif/Hari</p><p className="text-sm font-mono font-medium">{project.dailyRate} ETH</p></div>
-                        <div className="p-3 rounded-2xl bg-white/5 border border-white/5 text-center"><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Earned</p><p className="text-sm font-mono font-medium text-green-500">{project.totalEarned} ETH</p></div>
+                        <div className="p-3 rounded-2xl bg-white/5 border border-white/5 text-center">
+                          <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Tarif/Hari</p>
+                          <p className="text-sm font-mono font-medium">{project.dailyRate} ETH</p>
+                        </div>
+                        <div className="p-3 rounded-2xl bg-white/5 border border-white/5 text-center">
+                          <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Earned</p>
+                          <p className="text-sm font-mono font-medium text-green-500">{project.totalEarned} ETH</p>
+                        </div>
                       </div>
                       {project.status === 'active' ? (
-                        <a href="/dashboard/proofs" className="w-full py-3 rounded-xl bg-[#FF4500] text-white text-center text-sm font-bold hover:bg-[#e63e00] transition-colors flex items-center justify-center gap-2"><iconify-icon icon="lucide:camera" />Kirim Bukti Kerja</a>
+                        <a href="/dashboard/proofs" className="w-full py-3 rounded-xl bg-[#FF4500] text-white text-center text-sm font-bold hover:bg-[#e63e00] transition-colors flex items-center justify-center gap-2">
+                          <Iconify icon="lucide:camera" />Kirim Bukti Kerja
+                        </a>
                       ) : (
-                        <div className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 text-center text-sm font-medium">Menunggu Persetujuan</div>
+                        <div className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 text-center text-sm font-medium">
+                          Menunggu Persetujuan
+                        </div>
                       )}
                     </div>
                   </div>
