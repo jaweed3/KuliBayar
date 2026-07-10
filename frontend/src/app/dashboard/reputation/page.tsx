@@ -5,10 +5,11 @@ import { useState, useEffect } from 'react';
 import { API_BASE } from '@/lib/config';
 import NavigationBar from '@/components/NavigationBar';
 import Footer from '@/components/Footer';
+import { Profile } from '@/types/models';
 
 export default function Reputation() {
   const [address, setAddress] = useState('');
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -57,9 +58,9 @@ export default function Reputation() {
     ));
   };
 
-  const getOnTimeRate = (profile: any) => {
-    if (!profile.totalJobs || profile.totalJobs === '0') return '0%';
-    return `${Math.round((parseInt(profile.onTimePayments) / parseInt(profile.totalJobs)) * 100)}%`;
+  const getOnTimeRate = (p: Profile) => {
+    if (!p.totalJobs || p.totalJobs === '0') return '0%';
+    return `${Math.round((parseInt(p.onTimePayments) / parseInt(p.totalJobs)) * 100)}%`;
   };
 
   return (
