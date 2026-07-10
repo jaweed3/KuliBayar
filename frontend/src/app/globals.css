@@ -1,0 +1,224 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #050505;
+  --accent: #FF4500;
+  --card: #111111;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg);
+  color: white;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.font-serif {
+  font-family: 'Playfair Display', serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Reveal animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Noise overlay */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+}
+
+/* Form input focus */
+.form-input-focus {
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-input-focus:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 2px rgba(255, 69, 0, 0.1);
+  outline: none;
+}
+
+/* Custom checkbox */
+.custom-checkbox {
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.25rem;
+  background-color: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.custom-checkbox:checked {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+.custom-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Text glow */
+.text-glow {
+  text-shadow: 0 0 12px rgba(255, 69, 0, 0.3);
+}
+
+/* Card glow */
+.card-border-glow {
+  position: relative;
+}
+
+.card-border-glow::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(45deg, rgba(255, 69, 0, 0.3), transparent, rgba(255, 69, 0, 0.1));
+  z-index: -1;
+  border-radius: inherit;
+}
+
+/* Total glow */
+.total-glow {
+  text-shadow: 0 0 20px rgba(255, 69, 0, 0.5);
+}
+
+/* Pulse orange */
+.pulse-orange {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 69, 0, 0.3);
+  border-radius: 10px;
+}
+
+/* Spin animation */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-custom {
+  animation: spin 1s linear infinite;
+}
+
+/* Float animations */
+@keyframes float-hand-left {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-20px) rotate(2deg); }
+}
+
+@keyframes float-hand-right {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(20px) rotate(-2deg); }
+}
+
+.animate-float-left {
+  animation: float-hand-left 12s ease-in-out infinite;
+}
+
+.animate-float-right {
+  animation: float-hand-right 14s ease-in-out infinite;
+}
+
+/* Atmosphere glow */
+.atmos-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(255, 69, 0, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Project card hover */
+.project-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--accent);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 69, 0, 0.1);
+}
+
+/* Role card glow */
+.role-card-glow:hover {
+  box-shadow: 0 0 40px rgba(255, 69, 0, 0.15);
+  border-color: rgba(255, 69, 0, 0.5);
+}
+
+/* Glass card */
+.glass-card {
+  background: rgba(17, 17, 17, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Button glow */
+.btn-glow:hover {
+  box-shadow: 0 0 20px rgba(255, 69, 0, 0.4);
+}
+
+/* Status badge */
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Selection color */
+::selection {
+  background-color: var(--accent);
+  color: white;
+}
+
+/* Remove number input spinners */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
