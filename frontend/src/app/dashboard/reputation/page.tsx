@@ -1,11 +1,11 @@
-// @ts-nocheck
 'use client';
 
-import { useState, useEffect } from 'react';
-import { API_BASE } from '@/lib/config';
 import NavigationBar from '@/components/NavigationBar';
 import Footer from '@/components/Footer';
-import { Profile } from '@/types/models';
+import { useReputationSearch } from '@/lib/hooks/useReputationSearch';
+import { useRevealAnimation } from '@/lib/hooks/useRevealAnimation';
+
+import Iconify from '@/components/Iconify';
 
 export default function Reputation() {
   const [address, setAddress] = useState('');
@@ -50,10 +50,10 @@ export default function Reputation() {
   const getStars = (rating: number) => {
     const stars = Math.round(rating / 100);
     return Array.from({ length: 5 }, (_, i) => (
-      <iconify-icon
+      <Iconify
         key={i}
         icon={i < stars ? 'mdi:star' : 'mdi:star-outline'}
-        class={`text-xl ${i < stars ? 'text-[#FF4500]' : 'text-gray-600'}`}
+        className={`text-xl ${i < stars ? 'text-[#FF4500]' : 'text-gray-600'}`}
       />
     ));
   };
@@ -69,6 +69,7 @@ export default function Reputation() {
 
       <main className="flex-1 pt-32 pb-20 relative z-10">
         <div className="container mx-auto px-6">
+          {/* Header */}
           <div className="max-w-3xl mx-auto text-center mb-16 reveal">
             <h1 className="text-4xl md:text-6xl font-medium mb-6 tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
               Cari Reputasi <span className="italic text-[#FF4500]">On-Chain</span>
@@ -83,7 +84,7 @@ export default function Reputation() {
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-[#FF4500] to-orange-400 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500" />
               <div className="relative flex items-center bg-[#111] border border-white/10 rounded-2xl p-2">
-                <iconify-icon icon="lucide:search" class="ml-4 text-gray-500 text-xl" />
+                <Iconify icon="lucide:search" className="ml-4 text-gray-500 text-xl" />
                 <input
                   type="text"
                   placeholder="Masukkan alamat dompet (0x...)"
@@ -113,6 +114,7 @@ export default function Reputation() {
             </div>
           )}
 
+          {/* Profile Card */}
           {profile && (
             <div className="max-w-4xl mx-auto reveal" style={{ transitionDelay: '200ms' }}>
               <div className="space-y-8">
@@ -161,7 +163,7 @@ export default function Reputation() {
                     </div>
                     <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
                       <p className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">On-Time</p>
-                      <p className="text-2xl font-medium text-green-500">{getOnTimeRate(profile)}</p>
+                      <p className="text-2xl font-medium text-green-500">{getOnTimeRate(profile.totalJobs, profile.onTimePayments)}</p>
                     </div>
                     <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
                       <p className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">Sengketa</p>
@@ -177,17 +179,17 @@ export default function Reputation() {
                 {/* Info Cards */}
                 <div className="grid md:grid-cols-3 gap-6 opacity-60">
                   <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                    <iconify-icon icon="lucide:shield-check" class="text-[#FF4500] text-3xl mb-4" />
+                    <Iconify icon="lucide:shield-check" className="text-[#FF4500] text-3xl mb-4" />
                     <h4 className="text-lg font-medium mb-2">Data Immutable</h4>
                     <p className="text-sm text-gray-500">Reputasi dicatat di blockchain dan tidak dapat diubah secara sepihak oleh siapapun.</p>
                   </div>
                   <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                    <iconify-icon icon="lucide:database" class="text-[#FF4500] text-3xl mb-4" />
+                    <Iconify icon="lucide:database" className="text-[#FF4500] text-3xl mb-4" />
                     <h4 className="text-lg font-medium mb-2">Verifikasi GPS</h4>
                     <p className="text-sm text-gray-500">Setiap pekerjaan divalidasi dengan koordinat geografis asli dari lapangan.</p>
                   </div>
                   <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                    <iconify-icon icon="lucide:award" class="text-[#FF4500] text-3xl mb-4" />
+                    <Iconify icon="lucide:award" className="text-[#FF4500] text-3xl mb-4" />
                     <h4 className="text-lg font-medium mb-2">Reward On-Chain</h4>
                     <p className="text-sm text-gray-500">Pekerja dengan rating tinggi mendapatkan akses prioritas ke proyek-proyek besar.</p>
                   </div>
@@ -196,9 +198,10 @@ export default function Reputation() {
             </div>
           )}
 
+          {/* Empty State */}
           {!profile && !loading && !error && (
             <div className="text-center text-gray-600 py-10">
-              <iconify-icon icon="lucide:search" class="text-4xl mb-4" />
+              <Iconify icon="lucide:search" className="text-4xl mb-4" />
               <p>Masukkan alamat wallet untuk melihat reputasi on-chain</p>
             </div>
           )}
