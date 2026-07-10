@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   createProfile,
+  createKuliProfile,
   getProfile,
   getProfileByAddress,
   isReliable,
@@ -12,13 +13,17 @@ const router = Router();
 // Create profile
 router.post('/', async (req, res) => {
   try {
-    const { role } = req.body;
+    const { role, useKuliWallet } = req.body;
 
     if (role === undefined) {
       return res.status(400).json({ error: 'Missing role (0=Worker, 1=Kontraktor)' });
     }
 
-    const profileId = await createProfile(role);
+    // Use separate wallet if specified (for demo: create kontraktor + kuli from different addresses)
+    const profileId = useKuliWallet
+      ? await createKuliProfile(role)
+      : await createProfile(role);
+
     res.json({ success: true, profileId });
   } catch (error) {
     console.error('Error creating profile:', error);
