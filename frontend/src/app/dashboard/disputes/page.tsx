@@ -8,42 +8,21 @@ import { useRevealAnimation } from '@/lib/hooks/useRevealAnimation';
 
 import Iconify from '@/components/Iconify';
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!canSubmit) return;
+export default function DisputeResolution() {
+  const {
+    form,
+    setForm,
+    loading,
+    result,
+    bannerType,
+    activeDispute,
+    history,
+    canSubmit,
+    dismissBanner,
+    handleSubmit,
+  } = useDisputes();
 
-    setLoading(true);
-    setResult(null);
-
-    try {
-      const res = await fetch(`${API_BASE}/api/projects/${form.projectId}/dispute`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason: form.reason }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setResult('Laporan sengketa berhasil terkirim. Admin akan meninjau dalam 24 jam.');
-        setBannerType('success');
-        setActiveDispute({
-          id: `DISP-${Date.now().toString().slice(-4)}`,
-          reason: form.reason,
-          date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
-          status: 'reviewing',
-        });
-        setForm({ projectId: '', reason: '', description: '' });
-      } else {
-        setResult(`Error: ${data.error || 'Unknown error'}`);
-        setBannerType('error');
-      }
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Unknown error';
-      setResult(`Gagal: ${message}`);
-      setBannerType('error');
-    } finally {
-      setLoading(false);
-    }
-  };
+  useRevealAnimation([]);
 
   return (
     <div className="min-h-screen bg-[#050505] flex flex-col">
