@@ -31,9 +31,9 @@ export default function Reputation() {
     ));
   };
 
-  const getOnTimeRate = (p: Profile) => {
-    if (!p.totalJobs || p.totalJobs === '0') return '0%';
-    return `${Math.round((parseInt(p.onTimePayments) / parseInt(p.totalJobs)) * 100)}%`;
+  const getOnTimeRate = (totalJobs: string, onTimePayments: string) => {
+    if (!totalJobs || totalJobs === '0') return '0%';
+    return `${Math.round((parseInt(onTimePayments) / parseInt(totalJobs)) * 100)}%`;
   };
 
   return (
@@ -67,7 +67,7 @@ export default function Reputation() {
                   className="w-full bg-transparent border-none focus:ring-0 px-4 py-3 text-white placeholder-gray-600 font-mono text-sm outline-none"
                 />
                 <button
-                  onClick={fetchProfile}
+                  onClick={() => fetchProfile()}
                   disabled={loading}
                   className="bg-[#FF4500] hover:bg-[#e63e00] text-white px-8 py-3 rounded-xl font-medium transition-all active:scale-95 disabled:opacity-50"
                 >
@@ -80,7 +80,51 @@ export default function Reputation() {
             </p>
           </div>
 
-          {/* Profile Card */}
+          {/* Recent Profiles */}
+          <div className="max-w-4xl mx-auto mb-16 reveal" style={{ transitionDelay: '150ms' }}>
+            <h3 className="text-lg font-medium mb-6 text-gray-400" style={{ fontFamily: "'Playfair Display', serif" }}>Profil Terbaru</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {recentProfiles.map((p, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    setAddress(p.address);
+                    fetchProfile(p.address);
+                  }}
+                  className="text-left bg-[#111] border border-white/10 rounded-2xl p-5 hover:border-[#FF4500]/30 transition-all duration-300 group"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                      p.role === 'Kuli' ? 'bg-green-500/10' : 'bg-[#FF4500]/10'
+                    }`}>
+                      <Iconify
+                        icon={p.role === 'Kuli' ? 'lucide:hard-hat' : 'lucide:building-2'}
+                        className={`text-lg ${p.role === 'Kuli' ? 'text-green-500' : 'text-[#FF4500]'}`}
+                      />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium group-hover:text-[#FF4500] transition-colors">{p.name}</p>
+                      <p className="text-[10px] text-gray-500 font-mono">{p.shortAddress}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: 5 }, (_, j) => (
+                        <Iconify
+                          key={j}
+                          icon={j < Math.round(p.rating / 100) ? 'mdi:star' : 'mdi:star-outline'}
+                          className={`text-sm ${j < Math.round(p.rating / 100) ? 'text-[#FF4500]' : 'text-gray-600'}`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-[10px] text-gray-500">{p.jobs} pekerjaan</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Error */}
           {error && (
             <div className="max-w-2xl mx-auto mb-8 p-4 rounded-xl bg-red-500/10 text-red-400 text-sm text-center">
               {error}
