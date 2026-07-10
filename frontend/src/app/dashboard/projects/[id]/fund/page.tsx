@@ -23,18 +23,19 @@ export default function FundEscrow({ params }: { params: Promise<{ id: string }>
         <Footer />
       </div>
     );
-    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+  }
 
-  const handleConfirm = async () => {
-    setLoading(true);
-    // Simulate transaction
-    setTimeout(() => {
-      setLoading(false);
-      setFunded(true);
-    }, 2000);
-  };
+  if (!project) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex flex-col">
+        <NavigationBar activeItem="dashboard" />
+        <main className="flex-1 pt-32 pb-20 flex items-center justify-center">
+          <div className="text-gray-500">Proyek tidak ditemukan</div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#050505] flex flex-col">
