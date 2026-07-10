@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { API_BASE } from '@/lib/config';
 import NavigationBar from '@/components/NavigationBar';
 import Footer from '@/components/Footer';
+import NotificationBanner from '@/components/NotificationBanner';
 
 export default function CreateProject() {
   const [form, setForm] = useState({
@@ -13,7 +14,11 @@ export default function CreateProject() {
   });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
-  const [isError, setIsError] = useState(false);
+  const [bannerType, setBannerType] = useState<'success' | 'error'>('success');
+
+  const dismissBanner = useCallback(() => {
+    setResult(null);
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -45,16 +50,16 @@ export default function CreateProject() {
       const data = await res.json();
       if (data.success) {
         setResult(`Proyek berhasil dibuat! ID: ${data.projectId}`);
-        setIsError(false);
+        setBannerType('success');
         setForm({ kuliAddress: '', dailyRate: '', durationDays: '' });
       } else {
         setResult(`Error: ${data.error || 'Unknown error'}`);
-        setIsError(true);
+        setBannerType('error');
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Unknown error';
       setResult(`Gagal membuat proyek: ${message}`);
-      setIsError(true);
+      setBannerType('error');
     } finally {
       setLoading(false);
     }
@@ -136,12 +141,11 @@ export default function CreateProject() {
                 </div>
 
                 {result && (
-                  <div className={`rounded-2xl p-4 text-sm font-medium ${isError ? 'bg-red-500/10 text-red-500' : 'bg-[#FF4500]/10 text-[#FF4500]'}`}>
-                    <div className="flex items-center gap-2">
-                      <iconify-icon icon={isError ? 'lucide:x-circle' : 'lucide:check-circle'} />
-                      {result}
-                    </div>
-                  </div>
+                  <NotificationBanner
+                    type={bannerType}
+                    message={result}
+                    onDismiss={dismissBanner}
+                  />
                 )}
 
                 <div className="pt-4 space-y-4">
