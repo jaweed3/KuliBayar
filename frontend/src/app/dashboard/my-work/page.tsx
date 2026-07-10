@@ -23,6 +23,7 @@ export default function MyWork() {
     <div className="min-h-screen bg-[#050505]">
       <NavigationBar activeItem="my-work" />
       <main className="container mx-auto px-6 pt-40 pb-20 relative z-10">
+        {/* Header */}
         <header className="mb-12 reveal">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
@@ -30,21 +31,54 @@ export default function MyWork() {
               <p className="text-gray-400 max-w-xl">Lihat proyek aktif yang sedang Anda kerjakan. Kirim bukti kerja harian untuk mencairkan bayaran.</p>
             </div>
             <a href="/dashboard/proofs" className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#FF4500] text-white font-medium hover:bg-[#e63e00] transition-colors">
-              <iconify-icon icon="lucide:camera" />
+              <Iconify icon="lucide:camera" />
               <span>Kirim Bukti</span>
             </a>
           </div>
         </header>
 
+        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 reveal" style={{ transitionDelay: '100ms' }}>
-          <div className="bg-[#111] border border-white/5 p-5 rounded-2xl"><p className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">Proyek Aktif</p><p className="text-2xl font-bold text-[#FF4500]">{projects.filter(p => p.status === 'active').length}</p></div>
-          <div className="bg-[#111] border border-white/5 p-5 rounded-2xl"><p className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">Total Dikerjakan</p><p className="text-2xl font-bold">{projects.length}</p></div>
-          <div className="bg-[#111] border border-white/5 p-5 rounded-2xl"><p className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">Total Earned</p><p className="text-2xl font-bold text-green-500">{projects.reduce((sum, p) => sum + parseFloat(p.totalEarned), 0).toFixed(3)} ETH</p></div>
-          <div className="bg-[#111] border border-white/5 p-5 rounded-2xl"><p className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">Hari Ini</p><p className="text-2xl font-bold">2/3</p></div>
+          <div className="bg-[#111] border border-white/5 p-5 rounded-2xl">
+            <p className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">Proyek Aktif</p>
+            <p className="text-2xl font-bold text-[#FF4500]">{activeCount}</p>
+          </div>
+          <div className="bg-[#111] border border-white/5 p-5 rounded-2xl">
+            <p className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">Total Dikerjakan</p>
+            <p className="text-2xl font-bold">{projects.length}</p>
+          </div>
+          <div className="bg-[#111] border border-white/5 p-5 rounded-2xl">
+            <p className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">Total Earned</p>
+            <p className="text-2xl font-bold text-green-500">{totalEarned.toFixed(3)} ETH</p>
+          </div>
+          <div className="bg-[#111] border border-white/5 p-5 rounded-2xl">
+            <p className="text-gray-500 text-[10px] uppercase tracking-widest mb-1">Hari Ini</p>
+            <p className="text-2xl font-bold">2/3</p>
+          </div>
         </div>
 
+        {/* Projects List */}
         {loading ? (
-          <div className="text-center py-20 text-gray-500">Memuat proyek...</div>
+          <div className="space-y-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-[#111] border border-white/10 rounded-3xl p-6 md:p-8 animate-pulse">
+                <div className="flex flex-col md:flex-row md:items-center gap-6">
+                  <div className="flex-grow space-y-4">
+                    <div className="h-6 w-20 bg-white/5 rounded-full" />
+                    <div className="h-6 w-1/2 bg-white/5 rounded" />
+                    <div className="h-4 w-1/3 bg-white/5 rounded" />
+                  </div>
+                  <div className="flex flex-col items-end gap-4 md:min-w-[200px]">
+                    <div className="grid grid-cols-2 gap-4 w-full">
+                      <div className="h-16 bg-white/5 rounded-2xl" />
+                      <div className="h-16 bg-white/5 rounded-2xl" />
+                    </div>
+                    <div className="h-12 w-full bg-white/5 rounded-xl" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         ) : projects.length === 0 ? (
           <div className="text-center py-20 text-gray-500">Belum ada proyek aktif</div>
         ) : (
