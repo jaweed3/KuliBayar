@@ -79,18 +79,48 @@ export default function Payments() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
-                  <thead><tr className="border-b border-white/5 text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">
-                    <th className="px-6 py-5">Proyek</th><th className="px-6 py-5">Hari</th><th className="px-6 py-5">Jumlah</th><th className="px-6 py-5">Status</th><th className="px-6 py-5">Waktu</th><th className="px-6 py-5">TX Hash</th>
-                  </tr></thead>
+                  <thead>
+                    <tr className="border-b border-white/5 text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">
+                      <th className="px-6 py-5">Proyek</th>
+                      <th className="px-6 py-5">Hari</th>
+                      <th className="px-6 py-5">Jumlah</th>
+                      <th className="px-6 py-5">Status</th>
+                      <th className="px-6 py-5">Waktu</th>
+                      <th className="px-6 py-5">TX Hash</th>
+                    </tr>
+                  </thead>
                   <tbody className="divide-y divide-white/5">
                     {payments.map((payment) => (
                       <tr key={payment.id} className="group hover:bg-white/[0.02] transition-colors">
-                        <td className="px-6 py-5"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full bg-[#FF4500]/10 flex items-center justify-center"><iconify-icon icon="lucide:briefcase" class="text-[#FF4500] text-sm" /></div><div><p className="text-sm font-medium">{payment.projectName}</p><p className="text-[10px] text-gray-500">ID: {payment.projectId}</p></div></div></td>
-                        <td className="px-6 py-5"><span className="text-sm font-mono">Day {payment.day}</span></td>
-                        <td className="px-6 py-5"><span className="text-sm font-mono font-bold text-green-500">+{payment.amount} ETH</span></td>
-                        <td className="px-6 py-5"><span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${payment.status === 'success' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'}`}><iconify-icon icon={payment.status === 'success' ? 'lucide:check-circle' : 'lucide:timer'} class="text-xs" />{payment.status === 'success' ? 'Success' : 'Pending'}</span></td>
-                        <td className="px-6 py-5"><span className="text-xs text-gray-400">{payment.timestamp}</span></td>
-                        <td className="px-6 py-5"><code className="text-xs font-mono text-gray-500 group-hover:text-gray-300 transition-colors cursor-pointer">{payment.txHash}</code></td>
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-[#FF4500]/10 flex items-center justify-center">
+                              <Iconify icon="lucide:briefcase" className="text-[#FF4500] text-sm" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium">{payment.projectName}</p>
+                              <p className="text-[10px] text-gray-500">ID: {payment.projectId}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-5">
+                          <span className="text-sm font-mono">Day {payment.day}</span>
+                        </td>
+                        <td className="px-6 py-5">
+                          <span className="text-sm font-mono font-bold text-green-500">+{payment.amount} ETH</span>
+                        </td>
+                        <td className="px-6 py-5">
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${payment.status === 'success' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'}`}>
+                            <Iconify icon={payment.status === 'success' ? 'lucide:check-circle' : 'lucide:timer'} className="text-xs" />
+                            {payment.status === 'success' ? 'Success' : 'Pending'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5">
+                          <span className="text-xs text-gray-400">{payment.timestamp}</span>
+                        </td>
+                        <td className="px-6 py-5">
+                          <code className="text-xs font-mono text-gray-500 group-hover:text-gray-300 transition-colors cursor-pointer">{payment.txHash}</code>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -100,9 +130,10 @@ export default function Payments() {
           </div>
         </div>
 
+        {/* Info */}
         <div className="mt-12 reveal" style={{ transitionDelay: '200ms' }}>
           <div className="flex items-start gap-4 p-6 rounded-2xl bg-[#FF4500]/5 border border-[#FF4500]/20">
-            <iconify-icon icon="lucide:info" class="text-[#FF4500] text-2xl shrink-0" />
+            <Iconify icon="lucide:info" className="text-[#FF4500] text-2xl shrink-0" />
             <div>
               <h4 className="text-sm font-semibold mb-1">Tentang Pembayaran</h4>
               <p className="text-xs text-gray-400 leading-relaxed">Semua pembayaran dikirim langsung ke wallet Anda setelah bukti kerja (foto + GPS) diverifikasi oleh AI Oracle. Dana berasal dari escrow yang dikunci di smart contract oleh kontraktor.</p>
