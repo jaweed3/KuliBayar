@@ -53,14 +53,14 @@ export default function FundEscrow({ params }: { params: Promise<{ id: string }>
               </h1>
             </div>
             <div className="reveal active flex items-center gap-2 text-gray-500 text-sm">
-              <iconify-icon icon="lucide:lock" class="text-lg" />
+              <Iconify icon="lucide:lock" className="text-lg" />
               <span>Smart Contract Secure</span>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
             {/* Project Summary */}
-            <div className="reveal active bg-[#111] border border-white/5 rounded-3xl p-8 card-border-glow">
+            <div className="reveal active bg-[#111] border border-white/5 rounded-3xl p-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-6">
                   <div>
@@ -71,7 +71,7 @@ export default function FundEscrow({ params }: { params: Promise<{ id: string }>
                   <div>
                     <label className="text-[10px] text-gray-500 uppercase tracking-widest block mb-1">Lokasi Kerja</label>
                     <div className="flex items-center gap-2 text-gray-300">
-                      <iconify-icon icon="lucide:map-pin" class="text-[#FF4500]" />
+                      <Iconify icon="lucide:map-pin" className="text-[#FF4500]" />
                       <span>{project.location}</span>
                     </div>
                   </div>
@@ -82,18 +82,12 @@ export default function FundEscrow({ params }: { params: Promise<{ id: string }>
                     <label className="text-[10px] text-gray-500 uppercase tracking-widest block mb-1">Wallet Kontraktor</label>
                     <div className="flex items-center gap-2">
                       <code className="bg-white/5 px-2 py-1 rounded text-xs font-mono text-gray-400">{project.kontraktor}</code>
-                      <button className="text-gray-600 hover:text-white transition-colors">
-                        <iconify-icon icon="lucide:copy" />
-                      </button>
                     </div>
                   </div>
                   <div>
                     <label className="text-[10px] text-gray-500 uppercase tracking-widest block mb-1">Wallet Kuli</label>
                     <div className="flex items-center gap-2">
                       <code className="bg-white/5 px-2 py-1 rounded text-xs font-mono text-gray-400">{project.kuli}</code>
-                      <button className="text-gray-600 hover:text-white transition-colors">
-                        <iconify-icon icon="lucide:external-link" />
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -108,7 +102,7 @@ export default function FundEscrow({ params }: { params: Promise<{ id: string }>
                 <div className="flex justify-between items-center py-2 border-b border-white/5">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
-                      <iconify-icon icon="lucide:calendar" class="text-gray-400" />
+                      <Iconify icon="lucide:calendar" className="text-gray-400" />
                     </div>
                     <span className="text-gray-400">Durasi Kerja</span>
                   </div>
@@ -118,7 +112,7 @@ export default function FundEscrow({ params }: { params: Promise<{ id: string }>
                 <div className="flex justify-between items-center py-2 border-b border-white/5">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
-                      <iconify-icon icon="lucide:banknote" class="text-gray-400" />
+                      <Iconify icon="lucide:banknote" className="text-gray-400" />
                     </div>
                     <span className="text-gray-400">Tarif Harian (ETH)</span>
                   </div>
@@ -135,7 +129,7 @@ export default function FundEscrow({ params }: { params: Promise<{ id: string }>
                 <div className="flex justify-between items-center py-2 border-b border-white/5">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
-                      <iconify-icon icon="lucide:zap" class="text-gray-400" />
+                      <Iconify icon="lucide:zap" className="text-gray-400" />
                     </div>
                     <span className="text-gray-400">Estimasi Biaya Gas (Network)</span>
                   </div>
@@ -148,7 +142,7 @@ export default function FundEscrow({ params }: { params: Promise<{ id: string }>
                     <span className="text-sm text-gray-600">Dana akan dikunci di Escrow</span>
                   </div>
                   <div className="text-right">
-                    <div className="text-4xl md:text-5xl font-mono text-[#FF4500] font-medium total-glow tracking-tighter">
+                    <div className="text-4xl md:text-5xl font-mono text-[#FF4500] font-medium tracking-tighter">
                       {(project.totalAmount + project.gasEstimate).toFixed(4)} ETH
                     </div>
                   </div>
@@ -158,7 +152,7 @@ export default function FundEscrow({ params }: { params: Promise<{ id: string }>
 
             {/* Warning */}
             <div className="reveal active flex items-start gap-4 p-6 rounded-2xl bg-[#FF4500]/5 border border-[#FF4500]/20">
-              <iconify-icon icon="lucide:info" class="text-[#FF4500] text-2xl shrink-0" />
+              <Iconify icon="lucide:info" className="text-[#FF4500] text-2xl shrink-0" />
               <p className="text-sm text-gray-300 leading-relaxed">
                 <strong>Perhatian:</strong> Dana ini akan dikunci di Smart Contract KuliBayar. Dana hanya dapat dicairkan secara bertahap kepada Kuli setelah bukti kerja (Foto & GPS) diverifikasi oleh sistem. Kontraktor tidak dapat menarik kembali dana setelah proyek dimulai tanpa proses sengketa.
               </p>
@@ -168,16 +162,16 @@ export default function FundEscrow({ params }: { params: Promise<{ id: string }>
             {!funded ? (
               <div className="reveal active pt-8 flex flex-col md:flex-row gap-4">
                 <button
-                  onClick={handleConfirm}
-                  disabled={loading}
+                  onClick={handleFund}
+                  disabled={funding}
                   className="flex-1 inline-flex items-center justify-center px-8 py-5 rounded-full text-lg font-medium bg-[#FF4500] text-white hover:scale-[1.02] hover:bg-[#e63e00] transition-all duration-300 shadow-[0_10px_30px_rgba(255,69,0,0.3)] disabled:opacity-50"
                 >
-                  {loading ? (
-                    <iconify-icon icon="lucide:loader-2" class="mr-2 text-xl animate-spin" />
+                  {funding ? (
+                    <Iconify icon="lucide:loader-2" className="mr-2 text-xl animate-spin" />
                   ) : (
-                    <iconify-icon icon="lucide:check-circle" class="mr-2 text-xl" />
+                    <Iconify icon="lucide:check-circle" className="mr-2 text-xl" />
                   )}
-                  {loading ? 'Memproses...' : 'Konfirmasi & Tanda Tangani'}
+                  {funding ? 'Memproses...' : 'Konfirmasi & Tanda Tangani'}
                 </button>
                 <a
                   href="/dashboard"
@@ -188,7 +182,7 @@ export default function FundEscrow({ params }: { params: Promise<{ id: string }>
               </div>
             ) : (
               <div className="reveal active p-6 rounded-2xl bg-green-500/10 border border-green-500/20 text-center">
-                <iconify-icon icon="lucide:check-circle" class="text-4xl text-green-500 mb-4" />
+                <Iconify icon="lucide:check-circle" className="text-4xl text-green-500 mb-4" />
                 <h3 className="text-xl font-medium mb-2">Escrow Berhasil Difund!</h3>
                 <p className="text-gray-400 text-sm mb-4">Dana telah dikunci di smart contract. Proyek siap dimulai.</p>
                 <a href="/dashboard" className="text-[#FF4500] text-sm font-medium hover:underline">
