@@ -5,45 +5,19 @@ import Footer from '@/components/Footer';
 import { useMyWork } from '@/lib/hooks/useMyWork';
 import { useRevealAnimation } from '@/lib/hooks/useRevealAnimation';
 
+import Iconify from '@/components/Iconify';
+
+function getStatusStyle(status: string) {
+  switch (status) {
+    case 'active': return 'bg-green-500/10 text-green-500 border-green-500/20';
+    case 'pending': return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
+    default: return 'bg-white/5 text-gray-400 border-white/10';
+  }
+}
+
 export default function MyWork() {
-  const [projects, setProjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Mock data load
-  useEffect(() => {
-    setTimeout(() => {
-      setProjects([
-        { id: 1, name: 'Pondasi Gudang Logistik', location: 'Cikarang Selatan, Bekasi', kontraktor: 'Budi Santoso', kontraktorAddress: '0xac09...f2ff80', status: 'active', statusLabel: 'Aktif', daysCompleted: 3, durationDays: 10, dailyRate: '0.010', totalEarned: '0.030', lastProof: '2 jam lalu' },
-        { id: 2, name: 'Renovasi Ruko Blok A', location: 'Tebet, Jakarta Selatan', kontraktor: 'Ahmad Wijaya', kontraktorAddress: '0x5678...abcd', status: 'active', statusLabel: 'Aktif', daysCompleted: 1, durationDays: 5, dailyRate: '0.015', totalEarned: '0.015', lastProof: '5 jam lalu' },
-        { id: 3, name: 'Pemasangan Keramik Lt 2', location: 'Bintaro, Tangerang Selatan', kontraktor: 'Dewi Lestari', kontraktorAddress: '0x9abc...def0', status: 'pending', statusLabel: 'Menunggu', daysCompleted: 0, durationDays: 12, dailyRate: '0.008', totalEarned: '0.000', lastProof: 'Belum ada' },
-      ]);
-      setLoading(false);
-    }, 500);
-  }, []);
-
-  // Re-observe reveal elements when loading finishes
-  useEffect(() => {
-    if (!loading) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) entry.target.classList.add('active');
-          });
-        },
-        { threshold: 0.1 }
-      );
-      document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
-      return () => observer.disconnect();
-    }
-  }, [loading]);
-
-  const getStatusStyle = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-500/10 text-green-500 border-green-500/20';
-      case 'pending': return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
-      default: return 'bg-white/5 text-gray-400 border-white/10';
-    }
-  };
+  const { projects, loading, activeCount, totalEarned } = useMyWork();
+  useRevealAnimation([loading, projects]);
 
   return (
     <div className="min-h-screen bg-[#050505]">
