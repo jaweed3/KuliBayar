@@ -1,36 +1,27 @@
-// @ts-nocheck
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { use } from 'react';
 import NavigationBar from '@/components/NavigationBar';
 import Footer from '@/components/Footer';
+import { useFundProject } from '@/lib/hooks/useFundProject';
+import { useRevealAnimation } from '@/lib/hooks/useRevealAnimation';
+
+import Iconify from '@/components/Iconify';
 
 export default function FundEscrow({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const [loading, setLoading] = useState(false);
-  const [funded, setFunded] = useState(false);
+  const { project, loading, funded, funding, handleFund } = useFundProject(id);
+  useRevealAnimation([loading, funded]);
 
-  // Mock project data - in production, fetch from API
-  const project = {
-    id: parseInt(id),
-    name: 'Renovasi Villa Uluwatu',
-    location: 'Pecatu, Kuta Selatan, Bali',
-    kontraktor: '0xac09...f2ff80',
-    kuli: '0x7099...dc79c8',
-    dailyRate: 0.01,
-    durationDays: 5,
-    totalAmount: 0.05,
-    gasEstimate: 0.002,
-  };
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add('active');
-        });
-      },
-      { threshold: 0.1 }
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex flex-col">
+        <NavigationBar activeItem="dashboard" />
+        <main className="flex-1 pt-32 pb-20 flex items-center justify-center">
+          <div className="text-gray-500">Memuat data proyek...</div>
+        </main>
+        <Footer />
+      </div>
     );
     document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
     return () => observer.disconnect();
