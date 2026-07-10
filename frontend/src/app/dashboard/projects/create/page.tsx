@@ -52,8 +52,9 @@ export default function CreateProject() {
         setResult(`Error: ${data.error || 'Unknown error'}`);
         setIsError(true);
       }
-    } catch (err: any) {
-      setResult(`Gagal membuat proyek: ${err.message}`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setResult(`Gagal membuat proyek: ${message}`);
       setIsError(true);
     } finally {
       setLoading(false);
