@@ -1,41 +1,12 @@
-// @ts-nocheck
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { API_BASE } from '@/lib/config';
 import NavigationBar from '@/components/NavigationBar';
 import Footer from '@/components/Footer';
 import NotificationBanner from '@/components/NotificationBanner';
+import { useDisputes } from '@/lib/hooks/useDisputes';
+import { useRevealAnimation } from '@/lib/hooks/useRevealAnimation';
 
-export default function DisputeResolution() {
-  const [form, setForm] = useState({ projectId: '', reason: '', description: '' });
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
-  const [activeDispute, setActiveDispute] = useState(null);
-  const [bannerType, setBannerType] = useState<'success' | 'error'>('success');
-  const [history, setHistory] = useState([
-    { id: 'DISP-0012', reason: 'Kualitas Buruk', date: '02 Sep 2024', result: 'Favor Kuli (50%)', status: 'completed' },
-    { id: 'DISP-0005', reason: 'Foto Tidak Sesuai', date: '15 Agu 2024', result: 'Kompromi', status: 'cancelled' },
-  ]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add('active');
-        });
-      },
-      { threshold: 0.1 }
-    );
-    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
-  const dismissBanner = useCallback(() => {
-    setResult(null);
-  }, []);
-
-  const canSubmit = form.projectId && form.reason && form.description.length >= 20;
+import Iconify from '@/components/Iconify';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
