@@ -1,10 +1,11 @@
 // @ts-nocheck
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { API_BASE } from '@/lib/config';
 import NavigationBar from '@/components/NavigationBar';
 import Footer from '@/components/Footer';
+import NotificationBanner from '@/components/NotificationBanner';
 
 export default function PhotoCheckin() {
   const [form, setForm] = useState({ projectId: '' });
@@ -14,8 +15,12 @@ export default function PhotoCheckin() {
   const [gpsLoading, setGpsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
-  const [isError, setIsError] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const [bannerType, setBannerType] = useState<'success' | 'error'>('success');
+
+  const dismissBanner = useCallback(() => {
+    setResult(null);
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -83,15 +88,15 @@ export default function PhotoCheckin() {
       const data = await res.json();
       if (data.success) {
         setResult(`Bukti kerja berhasil dikirim! Proof ID: ${data.proofId}`);
-        setIsError(false);
+        setBannerType('success');
       } else {
         setResult(`Error: ${data.error || 'Unknown error'}`);
-        setIsError(true);
+        setBannerType('error');
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Unknown error';
       setResult(`Gagal: ${message}`);
-      setIsError(true);
+      setBannerType('error');
     } finally {
       setLoading(false);
     }
@@ -199,9 +204,11 @@ export default function PhotoCheckin() {
 
               {/* Result Message */}
               {result && (
-                <div className={`p-4 rounded-xl text-sm font-medium ${isError ? 'bg-red-500/10 text-red-400' : 'bg-green-500/10 text-green-400'}`}>
-                  {result}
-                </div>
+                <NotificationBanner
+                  type={bannerType}
+                  message={result}
+                  onDismiss={dismissBanner}
+                />
               )}
 
               {/* Submit */}
