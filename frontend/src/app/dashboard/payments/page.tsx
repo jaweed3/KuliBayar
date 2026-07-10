@@ -7,28 +7,15 @@ import { useRevealAnimation } from '@/lib/hooks/useRevealAnimation';
 
 import Iconify from '@/components/Iconify';
 
-  // Re-observe when loading finishes
-  useEffect(() => {
-    if (!loading) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) entry.target.classList.add('active');
-          });
-        },
-        { threshold: 0.1 }
-      );
-      document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
-      return () => observer.disconnect();
-    }
-  }, [loading]);
-
-  const totalEarned = payments.filter(p => p.status === 'success').reduce((sum, p) => sum + parseFloat(p.amount), 0);
+export default function Payments() {
+  const { payments, loading, totalEarned } = usePayments();
+  useRevealAnimation([loading, payments]);
 
   return (
     <div className="min-h-screen bg-[#050505]">
       <NavigationBar activeItem="payments" />
       <main className="container mx-auto px-6 pt-40 pb-20 relative z-10">
+        {/* Header */}
         <header className="mb-12 reveal">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
@@ -47,9 +34,18 @@ import Iconify from '@/components/Iconify';
               <p className="text-black/60 text-sm font-medium uppercase tracking-widest mb-2">Saldo Wallet</p>
               <div className="text-4xl md:text-5xl font-mono font-bold text-black mb-6">0.045 <span className="text-xl">ETH</span></div>
               <div className="flex flex-wrap gap-4">
-                <div className="bg-black/10 rounded-2xl px-6 py-3"><p className="text-black/50 text-[10px] uppercase tracking-widest font-bold">Total Diterima</p><p className="text-black font-mono font-bold">{totalEarned.toFixed(3)} ETH</p></div>
-                <div className="bg-black/10 rounded-2xl px-6 py-3"><p className="text-black/50 text-[10px] uppercase tracking-widest font-bold">Transaksi</p><p className="text-black font-mono font-bold">{payments.length}</p></div>
-                <div className="bg-black/10 rounded-2xl px-6 py-3"><p className="text-black/50 text-[10px] uppercase tracking-widest font-bold">Proyek Aktif</p><p className="text-black font-mono font-bold">2</p></div>
+                <div className="bg-black/10 rounded-2xl px-6 py-3">
+                  <p className="text-black/50 text-[10px] uppercase tracking-widest font-bold">Total Diterima</p>
+                  <p className="text-black font-mono font-bold">{totalEarned.toFixed(3)} ETH</p>
+                </div>
+                <div className="bg-black/10 rounded-2xl px-6 py-3">
+                  <p className="text-black/50 text-[10px] uppercase tracking-widest font-bold">Transaksi</p>
+                  <p className="text-black font-mono font-bold">{payments.length}</p>
+                </div>
+                <div className="bg-black/10 rounded-2xl px-6 py-3">
+                  <p className="text-black/50 text-[10px] uppercase tracking-widest font-bold">Proyek Aktif</p>
+                  <p className="text-black font-mono font-bold">2</p>
+                </div>
               </div>
             </div>
           </div>
