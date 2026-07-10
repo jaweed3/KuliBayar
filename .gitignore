@@ -1,6 +1,18 @@
 # backend trash
 backend/node_modules/
 
+# UI reference
+reference_ui/
+
+# lib forge std 
+lib/
+
+# to do works
+TODO.md
+
+# UI reference works
+UI_SPEC.md
+
 #frontend trash
 frontend/node_modules/
 
