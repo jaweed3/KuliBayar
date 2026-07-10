@@ -23,6 +23,7 @@ let workProofContract;
 // Kuli wallet for demo (Anvil account #1)
 const KULI_PRIVATE_KEY = '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d';
 let kuliContract;
+let kuliReputationContract;
 
 function getProvider() {
   if (!provider) {
@@ -71,6 +72,13 @@ export function initContracts() {
   kuliContract = new ethers.Contract(
     process.env.PROJECT_ESCROW_ADDRESS,
     projectEscrowABI,
+    kuliWallet
+  );
+
+  // Kuli reputation contract for creating kuli profiles
+  kuliReputationContract = new ethers.Contract(
+    process.env.REPUTATION_ADDRESS,
+    reputationABI,
     kuliWallet
   );
 
@@ -157,6 +165,13 @@ export async function getBalance() {
 // Reputation functions
 export async function createProfile(role) {
   const tx = await reputationContract.createProfile(role);
+  const receipt = await tx.wait();
+  const event = receipt.logs.find(log => log.fragment?.name === 'ProfileCreated');
+  return event?.args?.[0]?.toString();
+}
+
+export async function createKuliProfile(role) {
+  const tx = await kuliReputationContract.createProfile(role);
   const receipt = await tx.wait();
   const event = receipt.logs.find(log => log.fragment?.name === 'ProfileCreated');
   return event?.args?.[0]?.toString();
