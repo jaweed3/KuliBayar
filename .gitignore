@@ -1,3 +1,9 @@
+# backend trash
+backend/node_modules/
+
+#frontend trash
+frontend/node_modules/
+
 # Compiler files
 cache/
 out/
