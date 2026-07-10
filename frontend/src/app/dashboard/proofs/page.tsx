@@ -88,8 +88,9 @@ export default function PhotoCheckin() {
         setResult(`Error: ${data.error || 'Unknown error'}`);
         setIsError(true);
       }
-    } catch (err: any) {
-      setResult(`Gagal: ${err.message}`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setResult(`Gagal: ${message}`);
       setIsError(true);
     } finally {
       setLoading(false);
