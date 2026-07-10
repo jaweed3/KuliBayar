@@ -56,7 +56,7 @@ export default function DisputeResolution() {
             <div className="lg:col-span-7 space-y-8">
               <section className="reveal bg-[#111] border border-white/5 rounded-3xl p-8 shadow-2xl">
                 <div className="flex items-center gap-3 mb-8">
-                  <iconify-icon icon="lucide:alert-triangle" class="text-[#FF4500] text-3xl" />
+                  <Iconify icon="lucide:alert-triangle" className="text-[#FF4500] text-3xl" />
                   <h2 className="text-2xl font-medium" style={{ fontFamily: "'Playfair Display', serif" }}>Ajukan Sengketa Baru</h2>
                 </div>
 
@@ -123,12 +123,12 @@ export default function DisputeResolution() {
                     className={`w-full py-4 rounded-xl font-bold uppercase tracking-widest transition-all duration-300 ${
                       canSubmit && !loading
                         ? 'bg-[#FF4500] text-white hover:bg-[#e63e00] hover:scale-[1.02]'
-                        : 'bg-white/5 text-white/40 cursor-not-allowed'
+                        : 'bg-white/5 text-white/60 cursor-not-allowed'
                     }`}
                   >
                     {loading ? (
                       <div className="flex items-center justify-center gap-2">
-                        <iconify-icon icon="lucide:loader-2" class="animate-spin-custom text-xl" />
+                        <Iconify icon="lucide:loader-2" className="animate-spin-custom text-xl" />
                         <span>Mengirim...</span>
                       </div>
                     ) : (
@@ -174,7 +174,7 @@ export default function DisputeResolution() {
                   </>
                 ) : (
                   <div className="text-center py-8 text-gray-500">
-                    <iconify-icon icon="lucide:check-circle" class="text-4xl text-green-500/50 mb-4" />
+                    <Iconify icon="lucide:check-circle" className="text-4xl text-green-500/50 mb-4" />
                     <p>Tidak ada sengketa aktif</p>
                   </div>
                 )}
@@ -207,7 +207,7 @@ export default function DisputeResolution() {
                       <p className="text-xs text-gray-500 mb-3">{item.date} • Hasil: {item.result}</p>
                       {item.status === 'completed' && (
                         <div className="flex items-center gap-2 text-[10px] text-gray-400">
-                          <iconify-icon icon="lucide:check-circle" class="text-green-500" />
+                          <Iconify icon="lucide:check-circle" className="text-green-500" />
                           <span>Dana telah disalurkan ulang</span>
                         </div>
                       )}
