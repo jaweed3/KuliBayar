@@ -1,8 +1,11 @@
+# OS trash
+.DS_Store
+
 # backend trash
 backend/node_modules/
 
 # UI reference
-reference_ui/
+reference-ui/
 
 # lib forge std 
 lib/
@@ -15,6 +18,8 @@ UI_SPEC.md
 
 #frontend trash
 frontend/node_modules/
+frontend/AGENTS.md
+frontend/CLAUDE.md
 
 # Compiler files
 cache/
