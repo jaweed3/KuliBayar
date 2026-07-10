@@ -1,9 +1,10 @@
-// @ts-nocheck
 'use client';
 
 import NavigationBar from '@/components/NavigationBar';
 import Footer from '@/components/Footer';
 import { useEffect } from 'react';
+
+import Iconify from '@/components/Iconify';
 
 export default function Home() {
   useEffect(() => {
@@ -146,7 +147,7 @@ export default function Home() {
               <div className="reveal bg-[#FF4500] rounded-3xl p-8 md:p-12 aspect-[4/5] flex flex-col justify-between shadow-2xl hover:shadow-[0_20px_50px_rgba(255,69,0,0.3)] transition-all duration-500 group cursor-pointer">
                 <div className="flex justify-between items-start">
                   <div className="w-14 h-14 rounded-full bg-black/10 flex items-center justify-center group-hover:rotate-12 transition-transform duration-500">
-                    <iconify-icon icon="lucide:shield-check" class="text-black text-3xl" />
+                    <Iconify icon="lucide:shield-check" className="text-black text-3xl" />
                   </div>
                   <span className="text-black font-medium text-sm border border-black/20 px-3 py-1 rounded-full">01</span>
                 </div>
@@ -168,7 +169,7 @@ export default function Home() {
               <div className="reveal bg-[#111] border border-white/10 rounded-3xl p-8 md:p-12 aspect-[4/5] flex flex-col justify-between shadow-2xl group cursor-pointer hover:border-[#FF4500]/50 transition-all duration-500" style={{ transitionDelay: '150ms' }}>
                 <div className="flex justify-between items-start">
                   <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                    <iconify-icon icon="lucide:camera" class="text-white text-3xl" />
+                    <Iconify icon="lucide:camera" className="text-white text-3xl" />
                   </div>
                   <span className="text-white/50 font-medium text-sm border border-white/10 px-3 py-1 rounded-full">02</span>
                 </div>
