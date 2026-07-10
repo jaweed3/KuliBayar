@@ -81,16 +81,19 @@ router.post('/', upload.single('photo'), async (req, res) => {
 // Verify proof (admin/AI oracle)
 router.post('/:id/verify', async (req, res) => {
   try {
-    const { verified, projectId } = req.body;
+    const { verified } = req.body;
     const { id } = req.params;
 
     if (verified === undefined) {
       return res.status(400).json({ error: 'Missing verified field' });
     }
 
-    // Use provided projectId, or default to proof's projectId
-    const pId = projectId || id;
-    await verifyWorkProof(pId, id, verified);
+    // projectId required in body (cannot infer from proof ID alone)
+    if (!req.body.projectId) {
+      return res.status(400).json({ error: 'Missing projectId in body' });
+    }
+
+    await verifyWorkProof(req.body.projectId, id, verified);
     res.json({ success: true });
   } catch (error) {
     console.error('Error verifying proof:', error);
