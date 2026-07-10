@@ -8,44 +8,17 @@ import { useRevealAnimation } from '@/lib/hooks/useRevealAnimation';
 import Iconify from '@/components/Iconify';
 
 export default function Reputation() {
-  const [address, setAddress] = useState('');
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    address,
+    setAddress,
+    profile,
+    loading,
+    error,
+    recentProfiles,
+    fetchProfile,
+  } = useReputationSearch();
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add('active');
-        });
-      },
-      { threshold: 0.1 }
-    );
-    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
-  const fetchProfile = async () => {
-    if (!address) return;
-    setLoading(true);
-    setError(null);
-    setProfile(null);
-    try {
-      const res = await fetch(`${API_BASE}/api/reputation/address/${address}`);
-      const data = await res.json();
-      if (data.profileId && data.profileId !== '0') {
-        const profileRes = await fetch(`${API_BASE}/api/reputation/${data.profileId}`);
-        setProfile(await profileRes.json());
-      } else {
-        setProfile(null);
-      }
-    } catch (err) {
-      setError('Gagal mengambil data - pastikan backend berjalan');
-    } finally {
-      setLoading(false);
-    }
-  };
+  useRevealAnimation([]);
 
   const getStars = (rating: number) => {
     const stars = Math.round(rating / 100);
