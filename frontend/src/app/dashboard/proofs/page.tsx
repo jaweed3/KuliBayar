@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -6,6 +5,8 @@ import { API_BASE } from '@/lib/config';
 import NavigationBar from '@/components/NavigationBar';
 import Footer from '@/components/Footer';
 import NotificationBanner from '@/components/NotificationBanner';
+
+import Iconify from '@/components/Iconify';
 
 export default function PhotoCheckin() {
   const [form, setForm] = useState({ projectId: '' });
@@ -149,11 +150,11 @@ export default function PhotoCheckin() {
                     className="w-full md:w-auto flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl px-6 py-3 text-sm font-medium transition-all duration-300 mb-4"
                   >
                     {gpsLoading ? (
-                      <iconify-icon icon="lucide:loader-2" class="animate-spin-custom text-lg text-[#FF4500]" />
+                      <Iconify icon="lucide:loader-2" className="animate-spin-custom text-lg text-[#FF4500]" />
                     ) : gps ? (
-                      <iconify-icon icon="lucide:check-circle" class="text-lg text-green-400" />
+                      <Iconify icon="lucide:check-circle" className="text-lg text-green-400" />
                     ) : (
-                      <iconify-icon icon="lucide:map-pin" class="text-lg text-[#FF4500]" />
+                      <Iconify icon="lucide:map-pin" className="text-lg text-[#FF4500]" />
                     )}
                     <span>{gpsLoading ? 'Mencari Lokasi...' : gps ? 'Lokasi Berhasil Didapat' : 'Dapatkan Lokasi Saat Ini'}</span>
                   </button>
@@ -182,7 +183,7 @@ export default function PhotoCheckin() {
                       className="flex flex-col items-center justify-center aspect-video cursor-pointer py-12 px-6 text-center transition-all duration-300"
                     >
                       <div className="w-16 h-16 rounded-full bg-[#FF4500]/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
-                        <iconify-icon icon="lucide:camera" class="text-3xl text-[#FF4500]" />
+                        <Iconify icon="lucide:camera" className="text-3xl text-[#FF4500]" />
                       </div>
                       <span className="text-sm font-medium text-white/80">Ambil atau Upload Foto</span>
                       <span className="text-xs text-white/40 mt-2">Format JPG, PNG (Max 5MB)</span>
@@ -195,7 +196,7 @@ export default function PhotoCheckin() {
                         onClick={removePhoto}
                         className="absolute top-4 right-4 w-10 h-10 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-red-500 transition-colors duration-300 text-white shadow-xl"
                       >
-                        <iconify-icon icon="lucide:x" class="text-xl" />
+                        <Iconify icon="lucide:x" className="text-xl" />
                       </button>
                     </div>
                   )}
@@ -216,19 +217,19 @@ export default function PhotoCheckin() {
                 <button
                   type="submit"
                   disabled={!canSubmit || loading}
-                  className={`w-full py-5 rounded-2xl font-bold uppercase tracking-widest transition-all duration-300 group ${
+                  className={`w-full py-5 rounded-2xl font-bold uppercase tracking-widest transition-all duration-300 ${
                     canSubmit && !loading
                       ? 'bg-[#FF4500] text-white hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(255,69,0,0.3)]'
-                      : 'bg-white/5 text-white/40 cursor-not-allowed'
+                      : 'bg-white/5 text-white/60 cursor-not-allowed'
                   }`}
                 >
                   {loading ? (
                     <div className="flex items-center justify-center gap-2">
-                      <iconify-icon icon="lucide:loader-2" class="animate-spin-custom text-xl" />
+                      <Iconify icon="lucide:loader-2" className="animate-spin-custom text-xl" />
                       <span>Mengirim...</span>
                     </div>
                   ) : (
-                    <span className="group-enabled:text-[#FF4500]">Kirim Bukti Kerja</span>
+                    'Kirim Bukti Kerja'
                   )}
                 </button>
               </div>
