@@ -1,9 +1,10 @@
-// @ts-nocheck
 'use client';
 
 import { useState, useEffect, use } from 'react';
 import NavigationBar from '@/components/NavigationBar';
 import Footer from '@/components/Footer';
+
+import Iconify from '@/components/Iconify';
 
 export default function ProjectDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -78,11 +79,11 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
             </h1>
             <div className="flex flex-wrap items-center gap-6 text-gray-400">
               <div className="flex items-center gap-2">
-                <iconify-icon icon="lucide:map-pin" class="text-[#FF4500]" />
+                <Iconify icon="lucide:map-pin" className="text-[#FF4500]" />
                 <span>{project.location}</span>
               </div>
               <div className="flex items-center gap-2">
-                <iconify-icon icon="lucide:calendar" class="text-[#FF4500]" />
+                <Iconify icon="lucide:calendar" className="text-[#FF4500]" />
                 <span>{project.dateRange}</span>
               </div>
             </div>
@@ -90,7 +91,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
 
           <div className="flex items-center gap-4">
             <button className="p-3 rounded-full border border-white/10 hover:bg-white/5 transition-all text-white">
-              <iconify-icon icon="lucide:download" class="text-xl" />
+              <Iconify icon="lucide:download" className="text-xl" />
             </button>
             <a href="#" className="px-6 py-3 rounded-full border border-white/10 text-sm font-medium hover:bg-white/5 transition-all">
               Lihat On-Chain
@@ -114,7 +115,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
           </div>
           <div className="bg-[#111] border border-white/5 p-6 rounded-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-2 opacity-20">
-              <iconify-icon icon="lucide:check-circle-2" class="text-4xl text-[#FF4500]" />
+              <Iconify icon="lucide:check-circle-2" className="text-4xl text-[#FF4500]" />
             </div>
             <p className="text-gray-500 text-xs uppercase tracking-widest mb-2">Progress</p>
             <p className="text-2xl font-mono text-white">{project.daysCompleted} / {project.durationDays} <span className="text-gray-500 text-sm">Hari</span></p>
@@ -131,7 +132,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                   <h2 className="text-2xl font-bold mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>Status Escrow</h2>
                   <p className="text-black/60 font-medium">Dana Tersimpan Aman di Protokol</p>
                 </div>
-                <iconify-icon icon="lucide:shield-check" class="text-4xl text-black/40" />
+                <Iconify icon="lucide:shield-check" className="text-4xl text-black/40" />
               </div>
 
               <div className="mb-8">
@@ -160,7 +161,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                   <p className="text-[10px] uppercase font-bold tracking-widest opacity-60">Smart Contract</p>
                   <code className="text-sm font-mono">{project.contractAddress}</code>
                 </div>
-                <iconify-icon icon="lucide:external-link" class="text-black/60 cursor-pointer hover:text-black transition-colors" />
+                <Iconify icon="lucide:external-link" className="text-black/60 cursor-pointer hover:text-black transition-colors" />
               </div>
             </section>
 
@@ -185,7 +186,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                       {proof.status === 'verified' ? (
                         <img src="https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=200" alt={`Day ${proof.day}`} className="w-full h-full object-cover opacity-80" />
                       ) : (
-                        <iconify-icon icon="lucide:loader-2" class="text-4xl text-gray-700 animate-spin" />
+                        <Iconify icon="lucide:loader-2" className="text-4xl text-gray-700 animate-spin" />
                       )}
                     </div>
 
@@ -204,11 +205,11 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                       {proof.gps ? (
                         <div className="flex items-center gap-4 text-xs text-gray-400">
                           <div className="flex items-center gap-1">
-                            <iconify-icon icon="lucide:map-pin" class="text-[#FF4500]" />
+                            <Iconify icon="lucide:map-pin" className="text-[#FF4500]" />
                             <span>{proof.gps}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <iconify-icon icon="lucide:clock" class="text-[#FF4500]" />
+                            <Iconify icon="lucide:clock" className="text-[#FF4500]" />
                             <span>{proof.time}</span>
                           </div>
                         </div>
@@ -279,7 +280,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                     </div>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-gray-400">
-                    <iconify-icon icon="lucide:phone" class="text-[#FF4500]" />
+                    <Iconify icon="lucide:phone" className="text-[#FF4500]" />
                     <span>{project.kontraktor.phone}</span>
                   </div>
                 </div>
@@ -344,7 +345,7 @@ export default function ProjectDetail({ params }: { params: Promise<{ id: string
                         <span className={`flex items-center gap-2 text-xs font-bold ${
                           tx.status === 'success' ? 'text-green-500' : 'text-gray-700'
                         }`}>
-                          <iconify-icon icon={tx.status === 'success' ? 'lucide:check-circle' : 'lucide:timer'} />
+                          <Iconify icon={tx.status === 'success' ? 'lucide:check-circle' : 'lucide:timer'} />
                           {tx.status === 'success' ? 'Success' : 'In Progress'}
                         </span>
                       </td>
