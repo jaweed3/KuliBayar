@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+
+import Iconify from '@/components/Iconify';
 import "./globals.css";
 
 export const metadata: Metadata = {
