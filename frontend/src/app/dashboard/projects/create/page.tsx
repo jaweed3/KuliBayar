@@ -6,6 +6,8 @@ import NavigationBar from '@/components/NavigationBar';
 import Footer from '@/components/Footer';
 import NotificationBanner from '@/components/NotificationBanner';
 
+import Iconify from '@/components/Iconify';
+
 export default function CreateProject() {
   const [form, setForm] = useState({
     kuliAddress: '',
@@ -86,7 +88,7 @@ export default function CreateProject() {
                   <label className="block text-xs uppercase tracking-widest text-gray-500 font-medium ml-1">Alamat Wallet Kuli</label>
                   <div className="relative group">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-500">
-                      <iconify-icon icon="logos:ethereum-color" class="text-xl" />
+                      <Iconify icon="logos:ethereum-color" className="text-xl" />
                     </span>
                     <input
                       type="text"
@@ -105,7 +107,7 @@ export default function CreateProject() {
                     <label className="block text-xs uppercase tracking-widest text-gray-500 font-medium ml-1">Tarif Per Hari (ETH)</label>
                     <div className="relative">
                       <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-500">
-                        <iconify-icon icon="lucide:banknote" class="text-xl" />
+                        <Iconify icon="lucide:banknote" className="text-xl" />
                       </span>
                       <input
                         type="number"
@@ -125,7 +127,7 @@ export default function CreateProject() {
                     <label className="block text-xs uppercase tracking-widest text-gray-500 font-medium ml-1">Durasi Proyek (Hari)</label>
                     <div className="relative">
                       <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-500">
-                        <iconify-icon icon="lucide:calendar" class="text-xl" />
+                        <Iconify icon="lucide:calendar" className="text-xl" />
                       </span>
                       <input
                         type="number"
@@ -155,11 +157,11 @@ export default function CreateProject() {
                     className="w-full bg-[#FF4500] hover:bg-[#e63e00] text-white font-semibold py-4 rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 group overflow-hidden relative shadow-[0_10px_30px_rgba(255,69,0,0.2)] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? (
-                      <iconify-icon icon="lucide:loader-2" class="animate-spin text-xl" />
+                      <Iconify icon="lucide:loader-2" className="animate-spin text-xl" />
                     ) : (
                       <>
                         <span className="relative z-10">Buat Proyek</span>
-                        <iconify-icon icon="lucide:plus" class="text-xl group-hover:translate-x-1 transition-transform" />
+                        <Iconify icon="lucide:plus" className="text-xl group-hover:translate-x-1 transition-transform" />
                       </>
                     )}
                     <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform" />
@@ -177,7 +179,7 @@ export default function CreateProject() {
             <div className="mt-12 p-6 rounded-3xl border border-white/5 bg-white/[0.02] reveal" style={{ transitionDelay: '200ms' }}>
               <div className="flex gap-4">
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
-                  <iconify-icon icon="lucide:info" class="text-[#FF4500]" />
+                  <Iconify icon="lucide:info" className="text-[#FF4500]" />
                 </div>
                 <div>
                   <h4 className="text-sm font-semibold mb-1">Informasi Escrow</h4>
