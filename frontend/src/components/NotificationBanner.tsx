@@ -1,7 +1,8 @@
-// @ts-nocheck
 'use client';
 
 import { useEffect, useState } from 'react';
+
+import Iconify from '@/components/Iconify';
 
 interface NotificationBannerProps {
   type: 'success' | 'error';
@@ -43,16 +44,16 @@ export default function NotificationBanner({ type, message, onDismiss, autoDismi
   return (
     <div className={`${baseClasses} ${typeClasses} ${visibilityClasses}`}>
       <div className="flex items-start gap-3">
-        <iconify-icon
+        <Iconify
           icon={type === 'success' ? 'lucide:check-circle' : 'lucide:alert-circle'}
-          class="text-xl shrink-0 mt-0.5"
+          className="text-xl shrink-0 mt-0.5"
         />
         <p className="text-sm font-medium flex-1">{message}</p>
         <button
           onClick={handleDismiss}
           className="text-white/40 hover:text-white transition-colors shrink-0"
         >
-          <iconify-icon icon="lucide:x" class="text-lg" />
+          <Iconify icon="lucide:x" className="text-lg" />
         </button>
       </div>
     </div>
