@@ -1,6 +1,7 @@
 import { UserRole } from '@/lib/hooks/useProjectFilters';
 
 import Iconify from '@/components/Iconify';
+import Link from 'next/link';
 
 interface DashboardHeaderProps {
   activeTab: UserRole;
@@ -24,13 +25,13 @@ export default function DashboardHeader({ activeTab }: DashboardHeaderProps) {
         </div>
 
         {activeTab === 'kontraktor' ? (
-          <a
+          <Link
             href="/dashboard/projects/create"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#FF4500] text-white font-medium hover:bg-[#e63e00] transition-colors"
           >
             <Iconify icon="lucide:plus" />
             <span>Buat Proyek</span>
-          </a>
+          </Link>
         ) : (
           <a
             href="/dashboard/proofs"
