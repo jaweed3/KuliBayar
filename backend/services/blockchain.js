@@ -21,7 +21,7 @@ let reputationContract;
 let workProofContract;
 
 // Kuli wallet for demo (Anvil account #1)
-const KULI_PRIVATE_KEY = '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d';
+const KULI_PRIVATE_KEY = process.env.KULI_PRIVATE_KEY || '0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d';
 let kuliContract;
 let kuliReputationContract;
 
