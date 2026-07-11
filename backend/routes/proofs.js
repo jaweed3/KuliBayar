@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { verifyPhoto } from '../services/photoVerification.js';
+import { verifyPhoto, checkLocationMatch } from '../services/photoVerification.js';
+import { verifyChallenge } from '../services/livenessChallenge.js';
 import {
   submitWorkProof,
   verifyWorkProof,
@@ -8,6 +9,21 @@ import {
   getProjectProofIds,
   getProofCount
 } from '../services/blockchain.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load project locations
+let projectLocations = {};
+try {
+  const locationsPath = path.join(__dirname, '../data/projectLocations.json');
+  projectLocations = JSON.parse(fs.readFileSync(locationsPath, 'utf8'));
+} catch (error) {
+  console.warn('Warning: Could not load project locations:', error.message);
+}
 
 const router = Router();
 
@@ -32,18 +48,82 @@ const upload = multer({
 // Submit work proof with photo
 router.post('/', upload.single('photo'), async (req, res) => {
   try {
-    const { projectId, latitude, longitude } = req.body;
+    const { projectId, latitude, longitude, accuracy, challengeId, challengeResponse } = req.body;
 
     if (!projectId || !req.file) {
       return res.status(400).json({ error: 'Missing projectId or photo' });
     }
 
-    // Verify photo metadata
+    // Verify photo metadata with EXIF validation
     const verification = verifyPhoto({
       latitude: parseFloat(latitude),
       longitude: parseFloat(longitude),
-      timestamp: new Date().toISOString()
+      accuracy: accuracy ? parseFloat(accuracy) : null,
+      timestamp: new Date().toISOString(),
+      photoPath: req.file.path
     });
+
+    // Verify liveness challenge if provided
+    let challengeResult = null;
+    if (challengeId) {
+      challengeResult = await verifyChallenge(req.file.path, challengeId);
+
+      if (!challengeResult.valid) {
+        return res.status(400).json({
+          error: 'Liveness challenge failed',
+          score: challengeResult.score,
+          reasons: challengeResult.reasons
+        });
+      }
+    }
+
+    // Location cross-validation against project site
+    let locationResult = null;
+    const projectLocation = projectLocations[projectId.toString()];
+    if (projectLocation && latitude && longitude) {
+      const isWithinRadius = checkLocationMatch(
+        parseFloat(latitude),
+        parseFloat(longitude),
+        projectLocation.latitude,
+        projectLocation.longitude,
+        projectLocation.radiusKm || 0.5
+      );
+
+      locationResult = {
+        valid: isWithinRadius,
+        projectSite: projectLocation.name,
+        maxRadiusKm: projectLocation.radiusKm || 0.5
+      };
+
+      if (!isWithinRadius) {
+        verification.reasons.push(`GPS location is outside project site: ${projectLocation.name}`);
+        verification.score -= 25;
+      } else {
+        verification.reasons.push(`GPS location verified at project site: ${projectLocation.name}`);
+        verification.score += 5;
+      }
+    }
+
+    // Combine scores (EXIF: 60%, Challenge: 20%, Location: 20% if provided)
+    let finalScore = verification.score;
+    if (challengeResult && locationResult) {
+      finalScore = Math.round(verification.score * 0.6 + challengeResult.score * 0.2 + (locationResult.valid ? 20 : 0));
+    } else if (challengeResult) {
+      finalScore = Math.round(verification.score * 0.7 + challengeResult.score * 0.3);
+    } else if (locationResult) {
+      finalScore = Math.round(verification.score * 0.8 + (locationResult.valid ? 20 : 0));
+    }
+
+    const combinedReasons = [
+      ...verification.reasons,
+      ...(challengeResult ? challengeResult.reasons.map(r => `[Liveness] ${r}`) : []),
+      ...(locationResult ? [`[Location] ${locationResult.valid ? 'Within project site' : 'Outside project site'}`] : [])
+    ];
+
+    // Update verification result
+    verification.score = finalScore;
+    verification.reasons = combinedReasons;
+    verification.valid = finalScore >= 60;
 
     if (!verification.valid) {
       return res.status(400).json({
@@ -69,7 +149,13 @@ router.post('/', upload.single('photo'), async (req, res) => {
       photoHash,
       verification: {
         score: verification.score,
-        reasons: verification.reasons
+        reasons: verification.reasons,
+        exif: verification.exif,
+        challenge: challengeResult ? {
+          verified: challengeResult.valid,
+          score: challengeResult.score
+        } : null,
+        location: locationResult
       }
     });
   } catch (error) {
