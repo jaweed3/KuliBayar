@@ -4,7 +4,6 @@ import NavigationBar from '@/components/NavigationBar';
 import Footer from '@/components/Footer';
 import { usePayments } from '@/lib/hooks/usePayments';
 import { useRevealAnimation } from '@/lib/hooks/useRevealAnimation';
-
 import Iconify from '@/components/Iconify';
 
 export default function Payments() {
@@ -27,7 +26,7 @@ export default function Payments() {
 
         {/* Wallet Balance Card */}
         <div className="reveal mb-12">
-          <div className="bg-gradient-to-r from-[#FF4500] to-orange-600 rounded-3xl p-8 md:p-10 relative overflow-hidden">
+          <div className="bg-linear-to-r from-[#FF4500] to-orange-600 rounded-3xl p-8 md:p-10 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-black/10 rounded-full -translate-y-1/2 translate-x-1/3" />
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/5 rounded-full translate-y-1/2 -translate-x-1/3" />
             <div className="relative z-10">
@@ -91,11 +90,11 @@ export default function Payments() {
                   </thead>
                   <tbody className="divide-y divide-white/5">
                     {payments.map((payment) => (
-                      <tr key={payment.id} className="group hover:bg-white/[0.02] transition-colors">
+                      <tr key={payment.id} className="group hover:bg-white/2 transition-colors">
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-[#FF4500]/10 flex items-center justify-center">
-                              <Iconify icon="lucide:briefcase" className="text-[#FF4500] text-sm" />
+                              <Iconify icon="lucide:briefcase"  />
                             </div>
                             <div>
                               <p className="text-sm font-medium">{payment.projectName}</p>
