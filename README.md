@@ -4,6 +4,8 @@
 
 Escrow platform untuk konstruksi Indonesia. Dana dikunci di smart contract, cair otomatis setelah kerja terverifikasi via foto + GPS.
 
+> 🏆 Indonesia Web3 Hackathon 2026 — Finance & Commerce Track
+
 ---
 
 ## 🎯 Problem
@@ -22,22 +24,33 @@ Platform escrow on-chain yang:
 
 ---
 
+## ✅ Status
+
+| Component | Status | Tests |
+|-----------|--------|-------|
+| Smart Contracts | ✅ Done | 43/43 passing |
+| Backend | ✅ Done | 15/15 API tests |
+| Frontend | ✅ Done | 11/11 pages, 0 TS errors |
+| Deployment | ⏳ Pending | — |
+
+---
+
 ## 🏗️ Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        FRONTEND                             │
-│                    Next.js + Tailwind                       │
+│            Next.js 16 + React 19 + Tailwind CSS v4          │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
-│  │  Landing  │  │  Create  │  │  Photo   │  │Reputation│   │
-│  │   Page    │  │  Project │  │ Check-in │  │  Lookup  │   │
+│  │  Landing  │  │ Dashboard│  │  Photo   │  │Reputation│   │
+│  │   Page    │  │ (11 pages│  │ Check-in │  │  Lookup  │   │
 │  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘   │
 │       │              │              │              │         │
 │       └──────────────┴──────────────┴──────────────┘         │
 │                          │ HTTP                              │
 ├──────────────────────────┼──────────────────────────────────┤
 │                        BACKEND                              │
-│                   Express.js + ethers.js                     │
+│              Express.js + ethers.js v6 (ES modules)         │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
 │  │ Projects │  │  Proofs  │  │Reputation│  │ Matching │   │
 │  │  Routes  │  │  Routes  │  │  Routes  │  │  Routes  │   │
@@ -49,7 +62,7 @@ Platform escrow on-chain yang:
 │  └───────────────────┬───────────────────┘                  │
 ├──────────────────────┼──────────────────────────────────────┤
 │                   BLOCKCHAIN                                │
-│              Solidity + Foundry                              │
+│              Solidity 0.8.20 + Foundry                      │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
 │  │ProjectEscrow │  │  Reputation  │  │  WorkProof   │      │
 │  │   (core)     │  │  (profiles)  │  │  (standalone)│      │
@@ -176,7 +189,7 @@ Base URL: `http://localhost:3001`
 
 | Method | Endpoint | Description | Body |
 |--------|----------|-------------|------|
-| `POST` | `/api/reputation` | Buat profil | `{ role }` (0=Worker, 1=Kontraktor) |
+| `POST` | `/api/reputation` | Buat profil | `{ role, useKuliWallet? }` |
 | `GET` | `/api/reputation/:id` | Lihat profil | - |
 | `GET` | `/api/reputation/address/:address` | Cari by wallet | - |
 | `GET` | `/api/reputation/:id/reliable` | Cek reliable | - |
@@ -214,69 +227,36 @@ Key Functions:
 - `resolveDispute(projectId, favorKuli, amount)`
 - `cancelProject(projectId)`
 
-Events:
-- `ProjectCreated(projectId, kontraktor, kuli, totalAmount, dailyRate, durationDays)`
-- `FundsDeposited(projectId, amount)`
-- `WorkProofSubmitted(projectId, proofId, photoHash)`
-- `WorkProofVerified(projectId, proofId, verified)`
-- `PaymentReleased(projectId, kuli, amount, day)`
-- `ProjectCompleted(projectId, totalReleased)`
-- `DisputeRaised(projectId, sender, reason)`
-- `DisputeResolved(projectId, favorKuli, amount)`
-- `ProjectCancelled(projectId, refundAmount)`
-
 ### Reputation.sol
 
 Key Functions:
 - `createProfile(role)` → profileId
 - `recordJobComplete(profileId, earnings, onTime)`
 - `updateRating(profileId, newRating)` (100-500, represent 1.0-5.0 stars)
-- `recordDispute(profileId)`
 - `isReliable(profileId)` → bool (rating >= 400 && disputes < 3)
-- `getOnTimeRate(profileId)` → uint256 (0-100)
 
 ### WorkProof.sol
 
 Key Functions:
 - `submitProof(projectId, photoHash, latitude, longitude)` → proofId
 - `verifyProof(proofId, result)` (AI oracle only)
-- `getProof(proofId)`
-- `getProjectProofIds(projectId)`
 
 ---
 
-## 🖥️ Frontend Pages
+## 🖥️ Frontend Pages (11/11)
 
-### 1. Landing Page (`/`)
-- Hero section: "Bayaran Kuli, Dijamin On-Chain"
-- Stats: 10M+ kuli, 100% on-chain, 0% late payment
-- How it works (4 steps)
-- Quick links ke dashboard
-
-### 2. Create Project (`/dashboard/projects/create`)
-- Form fields:
-  - Alamat Kuli (text, required)
-  - Tarif/Hari - ETH (number, step 0.001, required)
-  - Durasi - Hari (number, required)
-- Submit button
-- Success/Error message
-
-### 3. Photo Check-in (`/dashboard/proofs`)
-- Form fields:
-  - Project ID (number, required)
-  - Foto Progress (file, accept image/*, capture environment)
-  - GPS Location button (get current position)
-- Submit button
-- Success/Error message
-
-### 4. Reputation Lookup (`/dashboard/reputation`)
-- Search by wallet address
-- Display:
-  - Rating (1.0-5.0 stars)
-  - Total pekerjaan
-  - Pembayaran tepat waktu
-  - Sengketa
-  - Total penghasilan (ETH)
+| Page | Route | Description |
+|------|-------|-------------|
+| Landing | `/` | Hero, stats, how-it-works |
+| Dashboard | `/dashboard` | Project list, role toggle, filters |
+| Create Project | `/dashboard/projects/create` | Form buat proyek |
+| Fund Escrow | `/dashboard/projects/[id]/fund` | Konfirmasi & sign transaksi |
+| Project Detail | `/dashboard/projects/[id]` | Status, progress, proofs |
+| My Work | `/dashboard/my-work` | Kuli's active projects |
+| Photo Check-in | `/dashboard/proofs` | Submit foto + GPS |
+| Payment History | `/dashboard/payments` | Riwayat transaksi |
+| Reputation | `/dashboard/reputation` | Cari & lihat profil on-chain |
+| Disputes | `/dashboard/disputes` | Ajukan & lihat sengketa |
 
 ---
 
@@ -286,8 +266,9 @@ Key Functions:
 |-------|------------|
 | Blockchain | Solidity 0.8.20, Foundry |
 | Smart Contracts | ProjectEscrow, Reputation, WorkProof |
-| Backend | Node.js, Express.js, ethers.js v6 |
-| Frontend | Next.js 16, React 19, Tailwind CSS v4 |
+| Backend | Node.js, Express.js, ethers.js v6 (ES modules) |
+| Frontend | Next.js 16, React 19, Tailwind CSS v4, TypeScript |
+| Icons | @iconify/react |
 | Wallet | MetaMask (window.ethereum) |
 | Network | Anvil (local) / BNB Testnet (prod) |
 
@@ -310,12 +291,8 @@ anvil
 # Set private key (Anvil account #0)
 export PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
-# Deploy
-forge create src/ProjectEscrow.sol:ProjectEscrow --rpc-url http://127.0.0.1:8545 --private-key $PRIVATE_KEY
-forge create src/Reputation.sol:Reputation --rpc-url http://127.0.0.1:8545 --private-key $PRIVATE_KEY
-forge create src/WorkProof.sol:WorkProof --rpc-url http://127.0.0.1:8545 --private-key $PRIVATE_KEY
-
-# Update backend/.env with contract addresses
+# Deploy all contracts
+bash scripts/deploy.sh
 ```
 
 ### 3. Start Backend
@@ -343,43 +320,93 @@ npm run dev
 
 ---
 
+## 🚀 Deployment (BSC Testnet)
+
+### Step 1: Get Testnet BNB
+1. Buka https://www.bnbchain.org/en/testnet-faucet
+2. Login Binance account
+3. Request tBNB
+
+### Step 2: Deploy Contracts
+```bash
+cp .env.example .env
+# Edit .env → isi PRIVATE_KEY dari MetaMask
+bash scripts/deploy.sh
+```
+
+### Step 3: Deploy Backend (Railway)
+- Root directory: `backend/`
+- Environment variables:
+  ```
+  PORT=3001
+  RPC_URL=https://data-seed-prebsc-1-s1.binance.org:8545
+  CHAIN_ID=97
+  PROJECT_ESCROW_ADDRESS=<dari deploy script>
+  REPUTATION_ADDRESS=<dari deploy script>
+  WORK_PROOF_ADDRESS=<dari deploy script>
+  ADMIN_PRIVATE_KEY=<private key kamu>
+  KULI_PRIVATE_KEY=0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
+  ```
+
+### Step 4: Deploy Frontend (Vercel)
+- Root directory: `frontend/`
+- Environment variables:
+  ```
+  NEXT_PUBLIC_ESCROW_ADDRESS=<dari deploy script>
+  NEXT_PUBLIC_REPUTATION_ADDRESS=<dari deploy script>
+  NEXT_PUBLIC_WORKPROOF_ADDRESS=<dari deploy script>
+  NEXT_PUBLIC_API_URL=https://kulibayar-backend.up.railway.app
+  ```
+
+---
+
 ## 📁 Project Structure
 
 ```
 kulibayar/
-├── src/                          # Smart contracts
-│   ├── ProjectEscrow.sol         # Core escrow contract
-│   ├── Reputation.sol            # On-chain reputation
-│   ├── WorkProof.sol             # Standalone proof storage
-│   ├── interfaces/               # Contract interfaces
-│   ├── types/                    # Struct definitions
-│   ├── errors/                   # Custom errors
-│   └── events/                   # Event definitions
+├── src/                          # Smart contracts (Solidity)
+│   ├── ProjectEscrow.sol
+│   ├── Reputation.sol
+│   ├── WorkProof.sol
+│   ├── interfaces/
+│   ├── types/
+│   ├── errors/
+│   └── events/
 ├── test/                         # Foundry tests (43 passing)
 ├── backend/
-│   ├── server.js                 # Express entry point
-│   ├── routes/                   # API routes
-│   │   ├── projects.js           # Project CRUD + escrow
-│   │   ├── proofs.js             # Photo proof submission
-│   │   ├── reputation.js         # Reputation lookup
-│   │   └── matching.js           # Worker-project matching
+│   ├── server.js
+│   ├── routes/
+│   │   ├── projects.js
+│   │   ├── proofs.js
+│   │   ├── reputation.js
+│   │   └── matching.js
 │   └── services/
-│       ├── blockchain.js         # ethers.js contract interaction
+│       ├── blockchain.js         # ethers.js + contract interaction
 │       ├── photoVerification.js  # GPS + timestamp validation
-│       └── matching.js           # Matching algorithm
+│       └── matching.js           # Worker-project matching
 ├── frontend/
 │   ├── src/
-│   │   ├── app/                  # Next.js App Router
-│   │   │   ├── page.tsx          # Landing page
-│   │   │   └── dashboard/        # Dashboard pages
+│   │   ├── app/                  # Next.js App Router (11 pages)
 │   │   ├── components/
-│   │   │   ├── ConnectWallet.tsx  # MetaMask integration
-│   │   │   └── ReputationBadge.tsx
-│   │   └── lib/
-│   │       └── config.ts         # Network + contract config
-│   └── .env.local                # Contract addresses
-├── foundry.toml                  # Foundry configuration
-└── .env                          # Root environment
+│   │   │   ├── Iconify.tsx       # @iconify/react wrapper
+│   │   │   ├── NavigationBar.tsx # With wallet + mobile menu
+│   │   │   ├── NotificationBanner.tsx
+│   │   │   └── dashboard/        # Dashboard sub-components
+│   │   ├── lib/
+│   │   │   ├── config.ts         # Network config
+│   │   │   ├── mock/             # Mock data (6 files)
+│   │   │   ├── api/              # API functions
+│   │   │   └── hooks/            # Custom React hooks (7 files)
+│   │   └── types/
+│   │       └── models.ts         # TypeScript interfaces
+│   └── .env.local
+├── scripts/
+│   └── deploy.sh                 # Deploy + auto-update .env
+├── reference-ui/                 # 11 HTML mockups
+├── foundry.toml
+├── .env.example
+├── TODO.md
+└── README.md
 ```
 
 ---
@@ -414,39 +441,18 @@ curl -X POST http://localhost:3001/api/proofs \
   -F "latitude=-6.2088" \
   -F "longitude=106.8456"
 
-# Verify proof
+# Verify proof (projectId required in body)
 curl -X POST http://localhost:3001/api/proofs/1/verify \
   -H "Content-Type: application/json" \
   -d '{"verified":true,"projectId":1}'
 ```
 
----
-
-## 🎨 UI Design Guidelines
-
-### Color Palette
-- Primary: Blue (#2563EB) - Kontraktor actions
-- Success: Green (#16A34A) - Payment, verified
-- Warning: Yellow (#EAB308) - Pending
-- Error: Red (#DC2626) - Disputes, failed
-- Background: Gray (#F9FAFB)
-
-### Typography
-- Heading: Bold, 24-32px
-- Body: Regular, 14-16px
-- Labels: Medium, 12-14px
-
-### Components
-- Cards with shadow for forms
-- Rounded buttons (8px radius)
-- Status badges (colored pills)
-- Loading spinners
-- Toast notifications for success/error
-
-### Responsive
-- Mobile-first design
-- Max width: 1280px (7xl)
-- Grid: 1 column mobile, 2-3 columns desktop
+### Frontend Build
+```bash
+cd frontend
+npm run build
+# 0 TypeScript errors, 11 routes compiled
+```
 
 ---
 
@@ -462,3 +468,4 @@ MIT
 - Track: Finance & Commerce
 - Problem: Late/missing payments for construction workers
 - Solution: Trustless escrow + on-chain reputation
+- Prize Pool: USD 5,000
