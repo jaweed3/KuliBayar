@@ -7,6 +7,7 @@ import projectsRouter from './routes/projects.js';
 import proofsRouter from './routes/proofs.js';
 import reputationRouter from './routes/reputation.js';
 import matchingRouter from './routes/matching.js';
+import challengesRouter from './routes/challenges.js';
 import { initContracts } from './services/blockchain.js';
 
 config();
@@ -25,6 +26,7 @@ app.use('/api/projects', projectsRouter);
 app.use('/api/proofs', proofsRouter);
 app.use('/api/reputation', reputationRouter);
 app.use('/api/matching', matchingRouter);
+app.use('/api/challenges', challengesRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {
