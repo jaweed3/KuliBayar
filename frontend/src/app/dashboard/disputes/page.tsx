@@ -30,8 +30,8 @@ export default function DisputeResolution() {
 
       <main className="relative pt-40 pb-32 flex-1">
         <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#FF4500]/10 blur-[120px] rounded-full" />
-          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#FF4500]/5 blur-[120px] rounded-full" />
+          <div className="absolute top-0 right-0 w-125px h-125px bg-[#FF4500]/10 blur-[120px] rounded-full" />
+          <div className="absolute bottom-0 left-0 w-125px h-125px bg-[#FF4500]/5 blur-[120px] rounded-full" />
         </div>
 
         <div className="container mx-auto px-6 relative z-10">
