@@ -1,0 +1,20 @@
+{
+  "1": {
+    "name": "Proyek Jakarta Selatan",
+    "latitude": -6.2615,
+    "longitude": 106.8106,
+    "radiusKm": 0.5
+  },
+  "2": {
+    "name": "Proyek Jakarta Pusat",
+    "latitude": -6.1751,
+    "longitude": 106.8650,
+    "radiusKm": 0.5
+  },
+  "3": {
+    "name": "Proyek Jakarta Barat",
+    "latitude": -6.1681,
+    "longitude": 106.7589,
+    "radiusKm": 0.5
+  }
+}
