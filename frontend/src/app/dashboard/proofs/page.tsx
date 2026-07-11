@@ -12,12 +12,21 @@ export default function PhotoCheckin() {
   const [form, setForm] = useState({ projectId: '' });
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [gps, setGps] = useState<{ lat: number; lng: number } | null>(null);
+  const [gps, setGps] = useState<{ lat: number; lng: number; accuracy: number } | null>(null);
   const [gpsLoading, setGpsLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [bannerType, setBannerType] = useState<'success' | 'error'>('success');
+
+  // Liveness challenge state
+  const [challenge, setChallenge] = useState<{
+    challengeId: string;
+    challenge: string;
+    expiresAt: string;
+  } | null>(null);
+  const [challengeLoading, setChallengeLoading] = useState(false);
+  const [challengeError, setChallengeError] = useState<string | null>(null);
 
   const dismissBanner = useCallback(() => {
     setResult(null);
@@ -41,14 +50,53 @@ export default function PhotoCheckin() {
     setGpsLoading(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        setGps({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setGps({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          accuracy: pos.coords.accuracy
+        });
         setGpsLoading(false);
       },
       (err) => {
         alert('Gagal dapat lokasi: ' + err.message);
         setGpsLoading(false);
-      }
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
+  };
+
+  const fetchChallenge = async () => {
+    if (!form.projectId) return;
+
+    setChallengeLoading(true);
+    setChallengeError(null);
+
+    try {
+      const res = await fetch(`${API_BASE}/api/challenges/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId: form.projectId,
+          workerAddress: '0x0000000000000000000000000000000000000001' // Mock address for demo
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setChallenge({
+          challengeId: data.challengeId,
+          challenge: data.challenge,
+          expiresAt: data.expiresAt
+        });
+      } else {
+        setChallengeError(data.error || 'Gagal membuat challenge');
+      }
+    } catch (err) {
+      setChallengeError('Gagal mengambil challenge');
+    } finally {
+      setChallengeLoading(false);
+    }
   };
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +115,7 @@ export default function PhotoCheckin() {
     if (photoInputRef.current) photoInputRef.current.value = '';
   };
 
-  const canSubmit = gps && photo && form.projectId;
+  const canSubmit = gps && photo && form.projectId && challenge;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,6 +128,8 @@ export default function PhotoCheckin() {
     formData.append('photo', photo);
     formData.append('latitude', gps.lat.toString());
     formData.append('longitude', gps.lng.toString());
+    formData.append('accuracy', gps.accuracy.toString());
+    formData.append('challengeId', challenge.challengeId);
 
     try {
       const res = await fetch(`${API_BASE}/api/proofs`, {
@@ -90,6 +140,11 @@ export default function PhotoCheckin() {
       if (data.success) {
         setResult(`Bukti kerja berhasil dikirim! Proof ID: ${data.proofId}`);
         setBannerType('success');
+        // Reset form after success
+        setPhoto(null);
+        setPhotoPreview(null);
+        setChallenge(null);
+        if (photoInputRef.current) photoInputRef.current.value = '';
       } else {
         setResult(`Error: ${data.error || 'Unknown error'}`);
         setBannerType('error');
@@ -159,8 +214,62 @@ export default function PhotoCheckin() {
                     <span>{gpsLoading ? 'Mencari Lokasi...' : gps ? 'Lokasi Berhasil Didapat' : 'Dapatkan Lokasi Saat Ini'}</span>
                   </button>
                   <div className={`text-xs font-mono ${gps ? 'text-green-400' : 'text-white/30 italic'}`}>
-                    {gps ? `Lat: ${gps.lat.toFixed(6)}, Lng: ${gps.lng.toFixed(6)}` : 'Koordinat belum didapatkan...'}
+                    {gps ? (
+                      <>
+                        <div>Lat: {gps.lat.toFixed(6)}, Lng: {gps.lng.toFixed(6)}</div>
+                        <div className={gps.accuracy > 50 ? 'text-yellow-400' : 'text-green-400'}>
+                          Akurasi: {gps.accuracy.toFixed(1)}m {gps.accuracy > 50 ? '(kurang akurat)' : '(baik)'}
+                        </div>
+                      </>
+                    ) : 'Koordinat belum didapatkan...'}
                   </div>
+                </div>
+              </div>
+
+              {/* Liveness Challenge */}
+              <div className="reveal" style={{ transitionDelay: '250ms' }}>
+                <label className="block text-sm font-medium text-gray-400 mb-3 uppercase tracking-widest">Verifikasi Kehadiran</label>
+                <div className="bg-[#111] border border-white/10 rounded-2xl p-6">
+                  {!challenge ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={fetchChallenge}
+                        disabled={!form.projectId || challengeLoading}
+                        className="w-full md:w-auto flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl px-6 py-3 text-sm font-medium transition-all duration-300 mb-4"
+                      >
+                        {challengeLoading ? (
+                          <Iconify icon="lucide:loader-2" className="animate-spin-custom text-lg text-[#FF4500]" />
+                        ) : (
+                          <Iconify icon="lucide:shield-check" className="text-lg text-[#FF4500]" />
+                        )}
+                        <span>{challengeLoading ? 'Membuat Challenge...' : 'Dapatkan Challenge'}</span>
+                      </button>
+                      {challengeError && (
+                        <div className="text-xs text-red-400 mt-2">{challengeError}</div>
+                      )}
+                      <div className="text-xs text-white/30 italic mt-2">
+                        Challenge diperlukan untuk membuktikan kehadiran Anda di lokasi proyek
+                      </div>
+                    </>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-green-400">
+                        <Iconify icon="lucide:check-circle" className="text-lg" />
+                        <span className="text-sm font-medium">Challenge Aktif</span>
+                      </div>
+                      <div className="bg-[#1a1a1a] rounded-xl p-4 border border-green-400/20">
+                        <div className="text-lg font-mono text-white mb-2">{challenge.challenge}</div>
+                        <div className="text-xs text-white/50">
+                          Berlaku sampai: {new Date(challenge.expiresAt).toLocaleTimeString('id-ID')}
+                        </div>
+                      </div>
+                      <div className="text-xs text-yellow-400">
+                        <Iconify icon="lucide:alert-triangle" className="inline mr-1" />
+                        Tulis kode di atas di kertas, pegang saat mengambil foto
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
