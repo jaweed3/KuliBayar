@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AuthProvider } from '@/lib/auth';
 
 import Iconify from '@/components/Iconify';
 import "./globals.css";
@@ -28,7 +29,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-[#050505] selection:bg-[#FF4500] selection:text-white">
         <div className="noise-overlay" />
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

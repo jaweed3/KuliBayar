@@ -20,9 +20,10 @@ if [ "$PRIVATE_KEY" = "your_private_key_here" ]; then
 fi
 
 RPC_URL=${RPC_URL:-"https://data-seed-prebsc-1-s1.binance.org:8545"}
+CHAIN_ID=${CHAIN_ID:-97}
 
 echo ""
-echo "📡 Deploying to BNB Testnet..."
+echo "📡 Deploying to chain $CHAIN_ID..."
 echo "   RPC: $RPC_URL"
 echo ""
 
@@ -56,7 +57,7 @@ cat > backend/.env << EOF
 PORT=3001
 NODE_ENV=development
 RPC_URL=$RPC_URL
-CHAIN_ID=97
+CHAIN_ID=$CHAIN_ID
 PROJECT_ESCROW_ADDRESS=$ESCROW
 REPUTATION_ADDRESS=$REPUTATION
 WORK_PROOF_ADDRESS=$WORKPROOF
@@ -71,7 +72,7 @@ cat > frontend/.env.local << EOF
 NEXT_PUBLIC_ESCROW_ADDRESS=$ESCROW
 NEXT_PUBLIC_REPUTATION_ADDRESS=$REPUTATION
 NEXT_PUBLIC_WORKPROOF_ADDRESS=$WORKPROOF
-NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_API_URL=${API_URL:-http://localhost:3001}
 EOF
 echo "   ✅ frontend/.env.local created"
 

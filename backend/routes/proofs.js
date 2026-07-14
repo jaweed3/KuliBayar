@@ -43,10 +43,26 @@ const upload = multer({
       cb(new Error('Only images allowed'), false);
     }
   }
-});
+}).single('photo');
+
+// Wrapper to handle multer errors properly
+function uploadMiddleware(req, res, next) {
+  upload(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(413).json({ error: 'File too large. Maximum size is 5MB.' });
+      }
+      return res.status(400).json({ error: `Upload error: ${err.message}` });
+    }
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    next();
+  });
+}
 
 // Submit work proof with photo
-router.post('/', upload.single('photo'), async (req, res) => {
+router.post('/', uploadMiddleware, async (req, res) => {
   try {
     const { projectId, latitude, longitude, accuracy, challengeId, challengeResponse } = req.body;
 
