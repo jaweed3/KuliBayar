@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { config } from 'dotenv';
+import { logger } from './utils/logger.js';
 
 import projectsRouter from './routes/projects.js';
 import proofsRouter from './routes/proofs.js';
@@ -76,14 +77,14 @@ app.get('/api/health', (req, res) => {
 
 // Start server
 app.listen(PORT, async () => {
-  console.log(`🚀 KuliBayar Backend running on port ${PORT}`);
-  console.log(`📡 Health check: http://localhost:${PORT}/api/health`);
+  logger.info(`🚀 KuliBayar Backend running on port ${PORT}`);
+  logger.info(`📡 Health check: http://localhost:${PORT}/api/health`);
 
   // Initialize blockchain contracts
   try {
     initContracts();
   } catch (err) {
-    console.error('⚠️  Failed to initialize contracts:', err.message);
-    console.error('   Make sure backend/.env has correct contract addresses and Anvil is running');
+    logger.error('⚠️  Failed to initialize contracts:', err.message);
+    logger.error('   Make sure backend/.env has correct contract addresses and Anvil is running');
   }
 });

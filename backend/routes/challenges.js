@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { createChallenge, verifyChallenge, getChallengeInfo, getWorkerChallenges } from '../services/livenessChallenge.js';
+import { logger } from '../utils/logger.js';
 
 const router = Router();
 
@@ -15,7 +16,7 @@ router.post('/create', async (req, res) => {
     const challenge = createChallenge(projectId, workerAddress);
     res.json({ success: true, ...challenge });
   } catch (error) {
-    console.error('Error creating challenge:', error);
+    logger.error('Error creating challenge:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -32,7 +33,7 @@ router.post('/verify', async (req, res) => {
     const result = await verifyChallenge(photoPath, challengeId);
     res.json({ success: true, ...result });
   } catch (error) {
-    console.error('Error verifying challenge:', error);
+    logger.error('Error verifying challenge:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -49,7 +50,7 @@ router.get('/:challengeId', async (req, res) => {
 
     res.json({ success: true, ...info });
   } catch (error) {
-    console.error('Error getting challenge:', error);
+    logger.error('Error getting challenge:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -61,7 +62,7 @@ router.get('/worker/:workerAddress', async (req, res) => {
     const challenges = getWorkerChallenges(workerAddress);
     res.json({ success: true, challenges });
   } catch (error) {
-    console.error('Error getting worker challenges:', error);
+    logger.error('Error getting worker challenges:', error);
     res.status(500).json({ error: error.message });
   }
 });
