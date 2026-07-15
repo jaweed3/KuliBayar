@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  test-contracts:
+    name: Test Smart Contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install dependencies
+        run: forge install
+
+      - name: Run tests
+        run: forge test
+        env:
+          FOUNDRY_PROFILE: ci
+
+      - name: Run gas report
+        run: forge test --gas-report
+        if: github.event_name == 'pull_request'
+
+  test-backend:
+    name: Test Backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Check syntax
+        working-directory: ./backend
+        run: |
+          for file in $(find . -name "*.js" -not -path "./node_modules/*"); do
+            node --check "$file" || exit 1
+          done
+
+      - name: Check for console.log
+        working-directory: ./backend
+        run: |
+          if grep -r "console\." --include="*.js" --exclude-dir=node_modules .; then
+            echo "::warning::Found console.log statements in backend code"
+          fi
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Run npm audit
+        working-directory: ./backend
+        run: npm audit --audit-level=high
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "Scanning for hardcoded secrets..."
+          if grep -r "0x[a-fA-F0-9]\{64\}" --include="*.js" --include="*.ts" --exclude-dir=node_modules --exclude-dir=.git .; then
+            echo "::error::Potential hardcoded private key found!"
+            exit 1
+          fi
+          
+          if grep -r "sk_live_\|pk_live_\|api_key\|secret_key" --include="*.js" --include="*.ts" --exclude-dir=node_modules --exclude-dir=.git .; then
+            echo "::error::Potential hardcoded API key found!"
+            exit 1
+          fi
+          
+          echo "✅ No obvious secrets found"
+
+  build-check:
+    name: Build Check
+    runs-on: ubuntu-latest
+    needs: [test-contracts, test-backend]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify clean working tree
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::warning::Working tree is not clean"
+          fi
