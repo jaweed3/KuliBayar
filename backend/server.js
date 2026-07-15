@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { config } from 'dotenv';
 import { logger } from './utils/logger.js';
+import { startUploadCleanup } from './utils/uploadCleanup.js';
 
 import projectsRouter from './routes/projects.js';
 import proofsRouter from './routes/proofs.js';
@@ -88,6 +89,10 @@ app.get('/api/health', (req, res) => {
 app.listen(PORT, async () => {
   logger.info(`🚀 KuliBayar Backend running on port ${PORT}`);
   logger.info(`📡 Health check: http://localhost:${PORT}/api/health`);
+  
+  // Start periodic upload cleanup
+  startUploadCleanup();
+  logger.info('🗑️  Upload cleanup job started (daily, deletes files > 7 days old)');
 
   // Initialize blockchain contracts
   try {
