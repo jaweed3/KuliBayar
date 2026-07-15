@@ -33,19 +33,50 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
 });
 
+// Magic bytes for common image formats
+const IMAGE_MAGIC_BYTES = {
+  jpg: Buffer.from([0xFF, 0xD8, 0xFF]),
+  png: Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]),
+  gif: Buffer.from([0x47, 0x49, 0x46]),
+  webp: Buffer.from([0x52, 0x49, 0x46, 0x46]),
+  bmp: Buffer.from([0x42, 0x4D])
+};
+
+// Block SVG and other potentially dangerous formats
+const BLOCKED_FORMATS = ['svg', 'svgz', 'xml'];
+
+function validateImageMagicBytes(buffer) {
+  for (const [format, magicBytes] of Object.entries(IMAGE_MAGIC_BYTES)) {
+    if (buffer.length >= magicBytes.length) {
+      const header = buffer.slice(0, magicBytes.length);
+      if (header.equals(magicBytes)) {
+        return { valid: true, format };
+      }
+    }
+  }
+  return { valid: false, format: null };
+}
+
 const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only images allowed'), false);
+    // First check MIME type
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('Only images allowed'), false);
     }
+    
+    // Block SVG explicitly (can contain JavaScript)
+    const ext = file.originalname.split('.').pop().toLowerCase();
+    if (BLOCKED_FORMATS.includes(ext)) {
+      return cb(new Error('SVG and XML-based image formats are not allowed'), false);
+    }
+    
+    cb(null, true);
   }
 }).single('photo');
 
-// Wrapper to handle multer errors properly
+// Wrapper to handle multer errors properly and validate magic bytes
 function uploadMiddleware(req, res, next) {
   upload(req, res, (err) => {
     if (err instanceof multer.MulterError) {
@@ -57,6 +88,20 @@ function uploadMiddleware(req, res, next) {
     if (err) {
       return res.status(400).json({ error: err.message });
     }
+    
+    // Validate magic bytes after file is uploaded
+    if (req.file) {
+      const fs = require('fs');
+      const buffer = fs.readFileSync(req.file.path);
+      const validation = validateImageMagicBytes(buffer);
+      
+      if (!validation.valid) {
+        // Clean up the file
+        fs.unlinkSync(req.file.path);
+        return res.status(400).json({ error: 'Invalid image format. File header does not match expected image types.' });
+      }
+    }
+    
     next();
   });
 }

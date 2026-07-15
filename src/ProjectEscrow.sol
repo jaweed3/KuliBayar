@@ -127,6 +127,7 @@ contract ProjectEscrow is IProjectEscrowEvents {
     /// @param _latitude GPS latitude (scaled by 1e6)
     /// @param _longitude GPS longitude (scaled by 1e6)
     /// @return proofId ID of the submitted proof
+    /// @notice Validates GPS coordinates to prevent invalid data storage
     function submitWorkProof(
         uint256 projectId,
         string calldata _photoHash,
@@ -137,6 +138,12 @@ contract ProjectEscrow is IProjectEscrowEvents {
 
         if (project.status != ProjectTypes.Status.Active) revert ProjectNotActive();
         if (projectDisputed[projectId]) revert ProjectNotActive();
+
+        // Validate GPS coordinates (scaled by 1e6)
+        // Latitude: -90 to 90 degrees = -90000000 to 90000000
+        // Longitude: -180 to 180 degrees = -180000000 to 180000000
+        if (_latitude < -90000000 || _latitude > 90000000) revert InvalidCoordinates();
+        if (_longitude < -180000000 || _longitude > 180000000) revert InvalidCoordinates();
 
         uint256 proofId = nextProofId++;
 
@@ -185,6 +192,7 @@ contract ProjectEscrow is IProjectEscrowEvents {
     }
 
     /// @dev Internal function to release daily payment
+    /// @notice Uses Checks-Effects-Interactions pattern to prevent reentrancy
     function _releasePayment(uint256 projectId) internal {
         ProjectTypes.Project storage project = projects[projectId];
 
@@ -198,16 +206,21 @@ contract ProjectEscrow is IProjectEscrowEvents {
             amountToRelease = remaining;
         }
 
+        // EFFECTS: Update state BEFORE external call (reentrancy protection)
         project.daysCompleted++;
         project.totalReleased += amountToRelease;
 
+        bool completed = project.daysCompleted >= project.durationDays || project.totalReleased >= project.totalAmount;
+        if (completed) {
+            project.status = ProjectTypes.Status.Completed;
+        }
+
+        // INTERACTIONS: External call AFTER state updates
+        emit PaymentReleased(projectId, project.kuli, amountToRelease, project.daysCompleted);
         (bool success, ) = project.kuli.call{value: amountToRelease}("");
         require(success, "Transfer failed");
 
-        emit PaymentReleased(projectId, project.kuli, amountToRelease, project.daysCompleted);
-
-        if (project.daysCompleted >= project.durationDays || project.totalReleased >= project.totalAmount) {
-            project.status = ProjectTypes.Status.Completed;
+        if (completed) {
             emit ProjectCompleted(projectId, project.totalReleased);
         }
     }
@@ -237,6 +250,7 @@ contract ProjectEscrow is IProjectEscrowEvents {
     /// @param projectId ID of the project
     /// @param _favorKuli Whether the dispute is resolved in favor of kuli
     /// @param _amount Amount to release (to kuli) or refund (to kontraktor)
+    /// @notice Uses Checks-Effects-Interactions pattern to prevent reentrancy
     function resolveDispute(
         uint256 projectId,
         bool _favorKuli,
@@ -249,21 +263,26 @@ contract ProjectEscrow is IProjectEscrowEvents {
         uint256 remaining = project.totalAmount - project.totalReleased;
         if (_amount > remaining) _amount = remaining;
 
+        // EFFECTS: Update state BEFORE external calls (reentrancy protection)
+        project.status = ProjectTypes.Status.Completed;
+
         if (_favorKuli) {
-            (bool success, ) = project.kuli.call{value: _amount}("");
-            require(success, "Transfer failed");
             project.totalReleased += _amount;
 
             emit DisputeResolved(projectId, true, _amount);
             emit PaymentReleased(projectId, project.kuli, _amount, project.daysCompleted);
+
+            // INTERACTIONS: External call AFTER state updates
+            (bool success, ) = project.kuli.call{value: _amount}("");
+            require(success, "Transfer failed");
         } else {
+            emit DisputeResolved(projectId, false, _amount);
+
+            // INTERACTIONS: External call AFTER state updates
             (bool success, ) = project.kontraktor.call{value: _amount}("");
             require(success, "Refund failed");
-
-            emit DisputeResolved(projectId, false, _amount);
         }
 
-        project.status = ProjectTypes.Status.Completed;
         emit ProjectCompleted(projectId, project.totalReleased);
     }
 
@@ -273,6 +292,7 @@ contract ProjectEscrow is IProjectEscrowEvents {
 
     /// @notice Cancel project and refund remaining funds (admin only)
     /// @param projectId ID of the project
+    /// @notice Uses Checks-Effects-Interactions pattern to prevent reentrancy
     function cancelProject(uint256 projectId) external onlyAdmin projectExists(projectId) {
         ProjectTypes.Project storage project = projects[projectId];
 
@@ -282,13 +302,15 @@ contract ProjectEscrow is IProjectEscrowEvents {
 
         uint256 refundAmount = project.totalAmount - project.totalReleased;
 
+        // EFFECTS: Update state BEFORE external call (reentrancy protection)
+        project.status = ProjectTypes.Status.Cancelled;
+        emit ProjectCancelled(projectId, refundAmount);
+
+        // INTERACTIONS: External call AFTER state updates
         if (refundAmount > 0) {
             (bool success, ) = project.kontraktor.call{value: refundAmount}("");
             require(success, "Refund failed");
         }
-
-        project.status = ProjectTypes.Status.Cancelled;
-        emit ProjectCancelled(projectId, refundAmount);
     }
 
     // ============================================================

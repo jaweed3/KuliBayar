@@ -24,6 +24,7 @@ contract Reputation is IReputationEvents {
     mapping(uint256 => uint256[]) public profileJobIds;
 
     address public admin;
+    address public escrowContract; // Trusted ProjectEscrow contract address
 
     // ============================================================
     //                       MODIFIERS
@@ -31,6 +32,11 @@ contract Reputation is IReputationEvents {
 
     modifier onlyAdmin() {
         if (msg.sender != admin) revert NotAuthorized();
+        _;
+    }
+
+    modifier onlyTrusted() {
+        if (msg.sender != admin && msg.sender != escrowContract) revert NotAuthorized();
         _;
     }
 
@@ -50,6 +56,13 @@ contract Reputation is IReputationEvents {
 
     constructor() {
         admin = msg.sender;
+    }
+
+    /// @notice Set the trusted ProjectEscrow contract address
+    /// @param _escrowContract Address of ProjectEscrow contract
+    /// @dev Only admin can set this
+    function setEscrowContract(address _escrowContract) external onlyAdmin {
+        escrowContract = _escrowContract;
     }
 
     // ============================================================
@@ -88,7 +101,7 @@ contract Reputation is IReputationEvents {
     // ============================================================
 
     /// @notice Record a completed job and update stats
-    /// @dev Called by ProjectEscrow or admin after job completion
+    /// @dev Called by ProjectEscrow contract or admin after job completion
     /// @param profileId ID of the profile to update
     /// @param earnings Amount earned/spent in wei
     /// @param onTime Whether payment was on time
@@ -96,7 +109,7 @@ contract Reputation is IReputationEvents {
         uint256 profileId,
         uint256 earnings,
         bool onTime
-    ) external onlyAdmin profileExists(profileId) {
+    ) external onlyTrusted profileExists(profileId) {
         ReputationTypes.Profile storage profile = profiles[profileId];
 
         profile.totalJobs++;
@@ -108,13 +121,13 @@ contract Reputation is IReputationEvents {
     }
 
     /// @notice Update rating for a profile
-    /// @dev Called by ProjectEscrow or admin after job completion
+    /// @dev Called by ProjectEscrow contract or admin after job completion
     /// @param profileId ID of the profile to update
     /// @param newRating New rating (100-500, representing 1.0-5.0 stars)
     function updateRating(
         uint256 profileId,
         uint256 newRating
-    ) external onlyAdmin profileExists(profileId) {
+    ) external onlyTrusted profileExists(profileId) {
         if (newRating < 100 || newRating > 500) revert InvalidRating();
 
         ReputationTypes.Profile storage profile = profiles[profileId];
@@ -132,8 +145,9 @@ contract Reputation is IReputationEvents {
     }
 
     /// @notice Record a dispute for a profile
+    /// @dev Called by ProjectEscrow contract or admin
     /// @param profileId ID of the profile to update
-    function recordDispute(uint256 profileId) external onlyAdmin profileExists(profileId) {
+    function recordDispute(uint256 profileId) external onlyTrusted profileExists(profileId) {
         profiles[profileId].disputes++;
         emit DisputeRecorded(profileId, profiles[profileId].disputes);
     }

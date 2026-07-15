@@ -38,6 +38,46 @@ function parseEXIF(photoBuffer) {
 }
 
 /**
+ * Validate that photo has required EXIF data
+ * @param {Buffer} photoBuffer - Raw photo data
+ * @returns {Object} - { valid, exifData, error }
+ */
+function validateEXIF(photoBuffer) {
+  const exifData = parseEXIF(photoBuffer);
+  
+  if (!exifData) {
+    return {
+      valid: false,
+      exifData: null,
+      error: 'No EXIF data found'
+    };
+  }
+  
+  // Check for required EXIF fields
+  if (!exifData?.gps?.Latitude || !exifData?.gps?.Longitude) {
+    return {
+      valid: false,
+      exifData,
+      error: 'Missing GPS coordinates in EXIF'
+    };
+  }
+  
+  if (!exifData?.tags?.DateTimeOriginal) {
+    return {
+      valid: false,
+      exifData,
+      error: 'Missing timestamp in EXIF'
+    };
+  }
+  
+  return {
+    valid: true,
+    exifData,
+    error: null
+  };
+}
+
+/**
  * Extract GPS coordinates from EXIF data
  * @param {Object} exifData - Parsed EXIF data
  * @returns {Object|null} - { lat, lng } or null
@@ -116,19 +156,40 @@ export function verifyPhoto(photoData) {
   let exifGPS = null;
   let exifTimestamp = null;
 
-  // 0. Parse EXIF data from photo (if available)
+  // 0. Validate EXIF data is present and valid (REQUIRED for security)
   if (photoPath) {
     try {
       const photoBuffer = fs.readFileSync(photoPath);
-      exifData = parseEXIF(photoBuffer);
-
-      if (exifData) {
-        exifGPS = extractGPSFromEXIF(exifData);
-        exifTimestamp = extractTimestampFromEXIF(exifData);
+      const exifValidation = validateEXIF(photoBuffer);
+      
+      if (!exifValidation.valid) {
+        return {
+          valid: false,
+          score: 0,
+          reasons: [`EXIF validation failed: ${exifValidation.error}`],
+          exif: { hasEXIF: false, gps: null, timestamp: null, device: null }
+        };
       }
+      
+      exifData = exifValidation.exifData;
+      exifGPS = extractGPSFromEXIF(exifData);
+      exifTimestamp = extractTimestampFromEXIF(exifData);
     } catch (error) {
       console.error('Failed to read photo for EXIF:', error.message);
+      return {
+        valid: false,
+        score: 0,
+        reasons: ['Failed to read photo file'],
+        exif: { hasEXIF: false, gps: null, timestamp: null, device: null }
+      };
     }
+  } else {
+    return {
+      valid: false,
+      score: 0,
+      reasons: ['Photo path not provided'],
+      exif: { hasEXIF: false, gps: null, timestamp: null, device: null }
+    };
   }
 
   // 1. GPS coordinates check (submitted)
@@ -203,7 +264,7 @@ export function verifyPhoto(photoData) {
     }
   }
 
-  // 5. EXIF timestamp validation (if available)
+  // 5. EXIF timestamp validation
   if (exifTimestamp) {
     const exifTime = exifTimestamp.getTime();
     const now = Date.now();
@@ -234,11 +295,8 @@ export function verifyPhoto(photoData) {
     }
   }
 
-  // 6. Basic liveness check - reject if no EXIF data at all (possible screenshot/reuse)
-  if (!exifData) {
-    reasons.push('No EXIF data found (possible screenshot or edited photo)');
-    score -= 10;
-  }
+  // Note: EXIF validation is now mandatory (done in step 0)
+  // Removed: Basic liveness check for missing EXIF
 
   return {
     valid: score >= 60,

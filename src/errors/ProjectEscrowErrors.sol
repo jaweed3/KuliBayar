@@ -7,3 +7,4 @@ error ProjectNotActive();
 error AlreadyCompleted();
 error NoFundsToRelease();
 error InvalidProjectId();
+error InvalidCoordinates();

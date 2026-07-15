@@ -4,6 +4,7 @@
  */
 
 import crypto from 'crypto';
+import fs from 'fs';
 import Tesseract from 'tesseract.js';
 
 // In-memory challenge storage (in production, use Redis or database)
@@ -106,8 +107,25 @@ export async function verifyChallenge(photoPath, challengeId) {
     };
   }
 
-  // 2. Perform OCR on the photo
+  // 2. Validate image size before OCR (prevent DoS)
+  const stats = fs.statSync(photoPath);
+  const maxSize = 10 * 1024 * 1024; // 10MB max
+  if (stats.size > maxSize) {
+    challenges.delete(challengeId);
+    return {
+      valid: false,
+      score: 0,
+      reasons: [`Image too large (${(stats.size / 1024 / 1024).toFixed(2)}MB). Max is 10MB.`],
+      ocrText: ''
+    };
+  }
+
+  // 3. Perform OCR on the photo with timeout
   try {
+    // Use AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+
     const { data: { text } } = await Tesseract.recognize(
       photoPath,
       'ind+eng',
@@ -116,10 +134,12 @@ export async function verifyChallenge(photoPath, challengeId) {
           if (m.status === 'recognizing text') {
             // Optional: log progress
           }
-        }
+        },
+        abortSignal: controller.signal
       }
     );
 
+    clearTimeout(timeoutId);
     ocrText = text;
 
     // 3. Check if challenge code appears in OCR text
@@ -155,7 +175,13 @@ export async function verifyChallenge(photoPath, challengeId) {
 
   } catch (error) {
     console.error('OCR failed:', error.message);
-    reasons.push('OCR processing failed');
+    
+    if (error.name === 'AbortError') {
+      reasons.push('OCR timeout (exceeded 30 seconds)');
+    } else {
+      reasons.push('OCR processing failed');
+    }
+    
     score -= 20;
   }
 
