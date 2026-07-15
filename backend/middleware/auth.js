@@ -1,22 +1,53 @@
 import { SiweMessage, generateNonce } from 'siwe';
 import { getProfileByAddress, getProfile } from '../services/blockchain.js';
 
-// In-memory nonce store (ponytail: Map + TTL, use Redis if scaling matters)
+// In-memory nonce store with cleanup
 const nonces = new Map();
-const NONCE_TTL = 5 * 60 * 1000;
+const NONCE_TTL = 5 * 60 * 1000; // 5 minutes
+const MAX_NONCES = 10000; // Prevent memory exhaustion
+const CLEANUP_INTERVAL = 60000; // Clean up every minute
+
+// Periodic cleanup to prevent memory leak
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, value] of nonces.entries()) {
+    if (value.expiresAt < now) {
+      nonces.delete(key);
+    }
+  }
+}, CLEANUP_INTERVAL);
 
 export function createNonce(address) {
   const nonce = generateNonce();
   const key = address.toLowerCase();
-  nonces.set(key, nonce);
-  setTimeout(() => nonces.delete(key), NONCE_TTL);
+  
+  // Enforce max size - remove oldest if at limit
+  if (nonces.size >= MAX_NONCES) {
+    const oldestKey = nonces.keys().next().value;
+    nonces.delete(oldestKey);
+  }
+  
+  nonces.set(key, { nonce, expiresAt: Date.now() + NONCE_TTL });
   return nonce;
 }
 
 export function verifySiwe(address, signature, nonce, domain) {
   const key = address.toLowerCase();
   const stored = nonces.get(key);
-  if (!stored || stored !== nonce) return { ok: false, error: 'Nonce expired or invalid' };
+  
+  if (!stored) {
+    return { ok: false, error: 'Nonce expired or invalid' };
+  }
+  
+  if (stored.expiresAt < Date.now()) {
+    nonces.delete(key);
+    return { ok: false, error: 'Nonce expired' };
+  }
+  
+  if (stored.nonce !== nonce) {
+    return { ok: false, error: 'Invalid nonce' };
+  }
+  
   nonces.delete(key);
 
   const msg = new SiweMessage({

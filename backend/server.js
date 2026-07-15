@@ -45,6 +45,15 @@ const challengeLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Auth endpoints - stricter limits to prevent brute force
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // limit each IP to 20 auth requests per 15 minutes
+  message: { error: 'Too many authentication attempts, please wait before trying again' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Middleware
 app.use(helmet());
 app.use(cors({
@@ -61,7 +70,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/', generalLimiter);
 
 // Auth (no protection — these ARE the auth endpoints)
-app.use('/api/auth', authRouter);
+app.use('/api/auth', authLimiter, authRouter);
 
 // Protected routes — require wallet address header
 app.use('/api/projects', requireWallet, projectsRouter);

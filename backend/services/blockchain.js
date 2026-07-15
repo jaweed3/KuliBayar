@@ -46,25 +46,40 @@ function getWallet() {
 }
 
 export function initContracts() {
+  // Validate contract addresses before initialization
+  const projectEscrowAddress = process.env.PROJECT_ESCROW_ADDRESS;
+  const reputationAddress = process.env.REPUTATION_ADDRESS;
+  const workProofAddress = process.env.WORK_PROOF_ADDRESS;
+  
+  if (!projectEscrowAddress || !ethers.isAddress(projectEscrowAddress)) {
+    throw new Error('PROJECT_ESCROW_ADDRESS is not a valid Ethereum address');
+  }
+  if (!reputationAddress || !ethers.isAddress(reputationAddress)) {
+    throw new Error('REPUTATION_ADDRESS is not a valid Ethereum address');
+  }
+  if (!workProofAddress || !ethers.isAddress(workProofAddress)) {
+    throw new Error('WORK_PROOF_ADDRESS is not a valid Ethereum address');
+  }
+  
   const projectEscrowABI = loadABI('ProjectEscrow');
   const reputationABI = loadABI('Reputation');
   const workProofABI = loadABI('WorkProof');
   const wallet = getWallet();
 
   projectEscrowContract = new ethers.Contract(
-    process.env.PROJECT_ESCROW_ADDRESS,
+    projectEscrowAddress,
     projectEscrowABI,
     wallet
   );
 
   reputationContract = new ethers.Contract(
-    process.env.REPUTATION_ADDRESS,
+    reputationAddress,
     reputationABI,
     wallet
   );
 
   workProofContract = new ethers.Contract(
-    process.env.WORK_PROOF_ADDRESS,
+    workProofAddress,
     workProofABI,
     wallet
   );
@@ -114,8 +129,22 @@ export async function startProject(projectId) {
 }
 
 export async function submitWorkProof(projectId, photoHash, latitude, longitude) {
+  // Validate GPS coordinates before sending to contract (prevent invalid data + save gas)
+  // Latitude: -90 to 90 degrees
+  // Longitude: -180 to 180 degrees
+  const lat = parseFloat(latitude);
+  const lng = parseFloat(longitude);
+  
+  if (isNaN(lat) || lat < -90 || lat > 90) {
+    throw new Error('Invalid latitude: must be between -90 and 90');
+  }
+  
+  if (isNaN(lng) || lng < -180 || lng > 180) {
+    throw new Error('Invalid longitude: must be between -180 and 180');
+  }
+  
   // Use kuli wallet for proof submission (contract requires msg.sender == kuli)
-  const tx = await kuliContract.submitWorkProof(projectId, photoHash, latitude, longitude);
+  const tx = await kuliContract.submitWorkProof(projectId, photoHash, lat, lng);
   const receipt = await tx.wait();
   const event = receipt.logs.find(log => log.fragment?.name === 'WorkProofSubmitted');
   return event?.args?.[1]?.toString();
