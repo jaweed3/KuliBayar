@@ -35,6 +35,15 @@ const proofLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Challenge creation is expensive (OCR processing) - stricter limits
+const challengeLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 5, // limit each IP to 5 challenge creations per minute
+  message: { error: 'Too many challenge requests, please wait before trying again' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Middleware
 app.use(helmet());
 app.use(cors({
@@ -58,7 +67,7 @@ app.use('/api/projects', requireWallet, projectsRouter);
 app.use('/api/proofs', proofLimiter, requireWallet, proofsRouter);
 app.use('/api/reputation', requireWallet, reputationRouter);
 app.use('/api/matching', requireWallet, matchingRouter);
-app.use('/api/challenges', requireWallet, challengesRouter);
+app.use('/api/challenges', challengeLimiter, requireWallet, challengesRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {
