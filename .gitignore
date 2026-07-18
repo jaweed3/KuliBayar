@@ -51,3 +51,4 @@ out/
 
 # Uploads
 backend/uploads/*
+.playwright-mcp/
