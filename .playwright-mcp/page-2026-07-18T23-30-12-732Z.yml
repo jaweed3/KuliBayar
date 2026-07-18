@@ -1,0 +1,62 @@
+- generic [active] [ref=f8e1]:
+  - alert [ref=f8e2]
+  - generic [ref=f8e3]:
+    - navigation [ref=f8e4]:
+      - generic [ref=f8e5]:
+        - link "KuliBayar." [ref=f8e6] [cursor=pointer]:
+          - /url: /
+        - button "Connect" [ref=f8e8]
+    - generic [ref=f8e9]:
+      - generic:
+        - generic:
+          - img "Atmosphere"
+      - generic:
+        - img "Worker Hand"
+      - generic:
+        - img "Foundation"
+      - generic [ref=f8e11]:
+        - heading "Bayaran Kuli, Dijamin On-Chain." [level=1] [ref=f8e13]
+        - paragraph [ref=f8e15]: Platform escrow on-chain untuk konstruksi Indonesia. Dana dikunci di smart contract, cair otomatis setelah kerja terverifikasi via foto + GPS.
+        - generic [ref=f8e16]:
+          - link "Masuk ke Dashboard" [ref=f8e17] [cursor=pointer]:
+            - /url: /dashboard
+          - generic [ref=f8e21]: JAKARTA, INDONESIA
+    - generic [ref=f8e24]:
+      - generic [ref=f8e25]:
+        - heading "Kami menghilangkan keterlambatan pembayaran, membangun kepercayaan on-chain." [level=2] [ref=f8e26]
+        - paragraph [ref=f8e27]: Transparansi adalah fondasi. Kami mengunci dana kontraktor dan membayar kuli harian berdasarkan verifikasi nyata dari lapangan.
+      - generic [ref=f8e28]:
+        - generic [ref=f8e29]: ADHI KARYA
+        - generic [ref=f8e30]: WIKA
+        - generic [ref=f8e31]: PP CORP
+        - generic [ref=f8e32]: PUPR
+    - generic [ref=f8e34]:
+      - heading "Bagaimana KuliBayar Bekerja" [level=2] [ref=f8e36]
+      - generic [ref=f8e37]:
+        - generic [ref=f8e39] [cursor=pointer]:
+          - generic [ref=f8e40]: "01"
+          - generic [ref=f8e47]:
+            - heading "Dana Tersertifikasi" [level=3] [ref=f8e48]
+            - paragraph [ref=f8e49]: Kontraktor mengunci dana proyek di smart contract sebelum pekerjaan dimulai. Tidak ada manipulasi, dana aman di dalam protokol.
+        - generic [ref=f8e52] [cursor=pointer]:
+          - generic [ref=f8e53]: "02"
+          - generic [ref=f8e60]:
+            - heading "Verifikasi Otomatis" [level=3] [ref=f8e61]
+            - paragraph [ref=f8e62]: Bukti foto + koordinat GPS dari lapangan diverifikasi on-chain. Pembayaran langsung dilepas ke dompet kuli tanpa perantara.
+    - contentinfo [ref=f8e64]:
+      - generic [ref=f8e66]:
+        - generic [ref=f8e67]:
+          - heading "KuliBayar." [level=2]
+        - generic [ref=f8e68]:
+          - generic [ref=f8e69]:
+            - link "Whitepaper" [ref=f8e70] [cursor=pointer]:
+              - /url: "#"
+            - link "GitHub" [ref=f8e71] [cursor=pointer]:
+              - /url: https://github.com
+            - link "Twitter" [ref=f8e72] [cursor=pointer]:
+              - /url: "#"
+            - link "Dokumentasi" [ref=f8e73] [cursor=pointer]:
+              - /url: "#"
+          - generic [ref=f8e74]:
+            - paragraph [ref=f8e75]: © 2024 KuliBayar. Built for the infrastructure of Indonesia.
+            - paragraph [ref=f8e76]: Jakarta, 06.1824° S, 106.8291° E

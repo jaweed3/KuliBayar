@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import { API_BASE } from '@/lib/config';
+import { API_BASE, CHAIN } from '@/lib/config';
 
 interface AuthState {
   address: string | null;
@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         '',
         `URI: ${scheme}://${domain}`,
         `Version: 1`,
-        `Chain ID: 97`,
+        `Chain ID: ${CHAIN.id}`,
         `Nonce: ${nonce}`,
         `Issued At: ${new Date().toISOString()}`,
       ].join('\n');

@@ -44,22 +44,21 @@ export default function ConnectWallet() {
       });
       setAccount(accounts[0]);
 
-      // Switch to BSC Testnet
+      // Switch to Polygon Amoy
       try {
         await window.ethereum.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x61' }],
+          params: [{ chainId: '0x13882' }],
         });
       } catch {
-        // Chain not added yet, try adding it
         await window.ethereum.request({
           method: 'wallet_addEthereumChain',
           params: [{
-            chainId: '0x61',
-            chainName: 'BNB Smart Chain Testnet',
-            nativeCurrency: { name: 'BNB', symbol: 'tBNB', decimals: 18 },
-            rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545'],
-            blockExplorerUrls: ['https://testnet.bscscan.com'],
+            chainId: '0x13882',
+            chainName: 'Polygon Amoy Testnet',
+            nativeCurrency: { name: 'POL', symbol: 'POL', decimals: 18 },
+            rpcUrls: ['https://rpc-amoy.polygon.technology'],
+            blockExplorerUrls: ['https://amoy.polygonscan.com'],
           }],
         });
       }

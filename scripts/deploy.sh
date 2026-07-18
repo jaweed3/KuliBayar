@@ -19,8 +19,8 @@ if [ "$PRIVATE_KEY" = "your_private_key_here" ]; then
   exit 1
 fi
 
-RPC_URL=${RPC_URL:-"https://data-seed-prebsc-1-s1.binance.org:8545"}
-CHAIN_ID=${CHAIN_ID:-97}
+RPC_URL=${RPC_URL:-"https://rpc-amoy.polygon.technology"}
+CHAIN_ID=${CHAIN_ID:-80002}
 
 echo ""
 echo "📡 Deploying to chain $CHAIN_ID..."
@@ -85,6 +85,6 @@ echo "   Reputation:    $REPUTATION"
 echo "   WorkProof:     $WORKPROOF"
 echo ""
 echo "View on explorer:"
-echo "   https://testnet.bscscan.com/address/$ESCROW"
-echo "   https://testnet.bscscan.com/address/$REPUTATION"
-echo "   https://testnet.bscscan.com/address/$WORKPROOF"
+echo "   https://amoy.polygonscan.com/address/$ESCROW"
+echo "   https://amoy.polygonscan.com/address/$REPUTATION"
+echo "   https://amoy.polygonscan.com/address/$WORKPROOF"

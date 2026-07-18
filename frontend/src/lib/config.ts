@@ -1,16 +1,15 @@
-// BNB Chain Testnet Configuration
-export const BSC_TESTNET = {
-  id: 97,
-  name: 'BNB Smart Chain Testnet',
+export const CHAIN = {
+  id: 80002,
+  name: 'Polygon Amoy Testnet',
   rpcUrls: {
-    default: { http: ['https://data-seed-prebsc-1-s1.binance.org:8545'] },
+    default: { http: ['https://rpc-amoy.polygon.technology'] },
   },
   blockExplorers: {
-    default: { name: 'BscScan Testnet', url: 'https://testnet.bscscan.com' },
+    default: { name: 'PolygonScan Amoy', url: 'https://amoy.polygonscan.com' },
   },
   nativeCurrency: {
-    name: 'BNB',
-    symbol: 'tBNB',
+    name: 'POL',
+    symbol: 'POL',
     decimals: 18,
   },
 };

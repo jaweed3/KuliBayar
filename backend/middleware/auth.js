@@ -55,7 +55,7 @@ export function verifySiwe(address, signature, nonce, domain) {
     address,
     statement: 'Sign in to KuliBayar',
     version: '1',
-    chainId: parseInt(process.env.CHAIN_ID || '97'),
+    chainId: parseInt(process.env.CHAIN_ID || '80002'),
     nonce,
   });
 

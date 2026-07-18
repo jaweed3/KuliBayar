@@ -7,5 +7,5 @@ remappings = ["forge-std/=lib/forge-std/src/"]
 # Anvil local for production deployment on server
 [rpc_endpoints]
 anvil_local = "http://127.0.0.1:8545"
-bsc_testnet = "https://data-seed-prebsc-1-s1.binance.org:8545"
-bsc_testnet_alt = "https://bsc-testnet.public.blastapi.io"
+polygon_amoy = "https://rpc-amoy.polygon.technology"
+polygon_mainnet = "https://polygon-rpc.com"
