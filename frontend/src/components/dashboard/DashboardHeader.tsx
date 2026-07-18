@@ -33,13 +33,13 @@ export default function DashboardHeader({ activeTab }: DashboardHeaderProps) {
             <span>Buat Proyek</span>
           </Link>
         ) : (
-          <a
+          <Link
             href="/dashboard/proofs"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#FF4500] text-white font-medium hover:bg-[#e63e00] transition-colors"
           >
             <Iconify icon="lucide:camera" />
             <span>Kirim Bukti</span>
-          </a>
+          </Link>
         )}
       </div>
     </header>

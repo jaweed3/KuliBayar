@@ -11,7 +11,7 @@ graphify-out/
 reference-ui/
 
 # lib forge std
-lib/
+/lib/
 
 # to do works
 TODO.md

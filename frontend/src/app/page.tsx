@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import NavigationBar from '@/components/NavigationBar';
 import Footer from '@/components/Footer';
 import { useEffect } from 'react';
@@ -93,7 +94,7 @@ export default function Home() {
             </div>
 
             <div className="reveal flex flex-col items-center gap-6" style={{ transitionDelay: '400ms' }}>
-              <a
+              <Link
                 href="/dashboard"
                 className="relative group cursor-pointer"
               >
@@ -101,7 +102,7 @@ export default function Home() {
                 <div className="relative border border-white/20 bg-white/5 backdrop-blur-sm px-6 py-2 rounded-full flex items-center gap-3 text-xs md:text-sm text-white/80 uppercase tracking-widest hover:bg-white/10 transition-colors duration-300">
                   <span>Masuk ke Dashboard</span>
                 </div>
-              </a>
+              </Link>
 
               <div className="flex items-center gap-4 text-[10px] md:text-xs text-white/40 uppercase tracking-widest mt-8 font-mono">
                 <span>JAKARTA, INDONESIA</span>

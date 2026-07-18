@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { KontraktorProject, KuliProject } from '@/lib/mock/projects';
 import { UserRole } from '@/lib/hooks/useProjectFilters';
 
@@ -120,12 +121,12 @@ export default function ProjectCard({ project, activeTab }: ProjectCardProps) {
       {/* Action Buttons */}
       <div className="flex flex-col gap-3">
         <ProjectActions project={project} activeTab={activeTab} />
-        <a
+        <Link
           href={`/dashboard/projects/${projectId}`}
           className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white text-center text-sm font-medium hover:bg-white/10 transition-colors"
         >
           Lihat Detail
-        </a>
+        </Link>
       </div>
     </div>
   );
@@ -180,21 +181,21 @@ function KontraktorActions({ project }: { project: KontraktorProject }) {
   switch (project.status) {
     case 'created':
       return (
-        <a
+        <Link
           href={`/dashboard/projects/${project.id}/fund`}
           className="w-full py-3 rounded-xl bg-[#FF4500] text-white text-center text-sm font-bold hover:bg-[#e63e00] transition-colors flex items-center justify-center gap-2"
         >
           <Iconify icon="lucide:wallet" /> Fund Escrow
-        </a>
+        </Link>
       );
     case 'disputed':
       return (
-        <a
+        <Link
           href="/dashboard/disputes"
           className="w-full py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-center text-sm font-bold hover:bg-red-500/20 transition-colors"
         >
           Buka Sengketa
-        </a>
+        </Link>
       );
     default:
       return null;
@@ -206,12 +207,12 @@ function KuliActions({ project }: { project: KuliProject }) {
   switch (project.status) {
     case 'active':
       return (
-        <a
+        <Link
           href="/dashboard/proofs"
           className="w-full py-3 rounded-xl bg-[#FF4500] text-white text-center text-sm font-bold hover:bg-[#e63e00] transition-colors flex items-center justify-center gap-2"
         >
           <Iconify icon="lucide:camera" /> Kirim Bukti Kerja
-        </a>
+        </Link>
       );
     case 'pending':
       return (

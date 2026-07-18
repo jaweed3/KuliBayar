@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 
 export default function NavigationBar({ activeItem = 'dashboard' }: { activeItem?: string }) {
@@ -75,21 +76,21 @@ export default function NavigationBar({ activeItem = 'dashboard' }: { activeItem
       }`}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
-        <a href="/" className="text-2xl font-bold tracking-tighter" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <Link href="/" className="text-2xl font-bold tracking-tighter" style={{ fontFamily: "'Playfair Display', serif" }}>
           KuliBayar.
-        </a>
+        </Link>
 
         {/* Desktop Nav */}
         {isAuthenticated && (
           <div className="hidden md:flex items-center space-x-6">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.key}
                 href={link.href}
                 className={`text-sm transition-colors duration-300 ${activeItem === link.key ? 'text-white' : 'text-gray-400 hover:text-white'}`}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </div>
         )}
@@ -103,12 +104,12 @@ export default function NavigationBar({ activeItem = 'dashboard' }: { activeItem
                 </span>
               )}
               <span className="hidden sm:inline text-sm text-gray-400 font-mono">{shortenAddress(address)}</span>
-              <a
+              <Link
                 href="/dashboard"
                 className="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm font-medium bg-[#FF4500] text-white hover:scale-105 hover:bg-[#e63e00] transition-all duration-300"
               >
                 Dashboard
-              </a>
+              </Link>
               <button
                 onClick={signOut}
                 className="text-xs text-gray-500 hover:text-white transition-colors"
@@ -146,7 +147,7 @@ export default function NavigationBar({ activeItem = 'dashboard' }: { activeItem
         <div className={`md:hidden overflow-hidden transition-all duration-300 ${mobileMenuOpen ? 'max-h-80' : 'max-h-0'}`}>
           <div className="container mx-auto px-6 py-4 space-y-1">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.key}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
@@ -157,7 +158,7 @@ export default function NavigationBar({ activeItem = 'dashboard' }: { activeItem
                 }`}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </div>
         </div>

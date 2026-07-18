@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { AuthProvider } from '@/lib/auth';
-
-import Iconify from '@/components/Iconify';
 import "./globals.css";
 
 export const metadata: Metadata = {
