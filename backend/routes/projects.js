@@ -13,6 +13,8 @@ import {
   getProjectsByRole,
   getMyWork,
   getProject,
+  getOpenProjects,
+  updateProject,
 } from '../services/store.js';
 
 const router = Router();
@@ -32,6 +34,30 @@ router.get('/my-work', async (req, res) => {
   try {
     const data = getMyWork(req.walletAddress);
     res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get open projects (Created — no kuli assigned)
+router.get('/open', async (req, res) => {
+  try {
+    const data = getOpenProjects();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Kuli applies to an open project
+router.post('/:id/apply', async (req, res) => {
+  try {
+    const project = getProject(req.params.id);
+    if (!project) return res.status(404).json({ error: 'Project not found' });
+    if (project.status !== 'Created') return res.status(400).json({ error: 'Project is not open' });
+
+    updateProject(project.id, { kuli: req.walletAddress, kuliName: req.body.name || req.walletAddress.slice(0, 8) });
+    res.json({ success: true, projectId: project.id });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

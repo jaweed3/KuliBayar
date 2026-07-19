@@ -59,6 +59,7 @@ const isAdmin = address?.toLowerCase() === ADMIN_ADDRESS.toLowerCase();
   // Kuli sees all. Kontraktor doesn't see "Kirim Bukti" or "Kerjaan Saya".
   const allLinks = [
     { href: '/dashboard', key: 'projects', label: 'Proyek Saya', roles: [0, 1] },
+    { href: '/dashboard/marketplace', key: 'marketplace', label: 'Marketplace', roles: [0] },
     { href: '/dashboard/my-work', key: 'my-work', label: 'Kerjaan Saya', roles: [0] },
     { href: '/dashboard/proofs', key: 'proofs', label: 'Kirim Bukti', roles: [0] },
     { href: '/dashboard/payments', key: 'payments', label: 'Pembayaran', roles: [0, 1] },

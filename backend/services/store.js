@@ -70,6 +70,10 @@ export function getProject(id) {
   return projects.find(p => p.id === Number(id));
 }
 
+export function getOpenProjects() {
+  return projects.filter(p => p.status === 'Created');
+}
+
 export function addProject(data) {
   const p = { id: nextProjectId++, ...data, daysCompleted: 0, totalReleased: '0', status: 'Created' };
   projects.unshift(p);
