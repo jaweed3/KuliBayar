@@ -69,11 +69,7 @@ contract ProjectEscrow is IProjectEscrowEvents {
     /// @param _dailyRate Daily payment rate in wei
     /// @param _durationDays Project duration in days
     /// @return projectId ID of the created project
-    function createProject(
-        address _kuli,
-        uint256 _dailyRate,
-        uint256 _durationDays
-    ) external returns (uint256) {
+    function createProject(address _kuli, uint256 _dailyRate, uint256 _durationDays) external returns (uint256) {
         uint256 projectId = nextProjectId++;
         uint256 totalAmount = _dailyRate * _durationDays;
 
@@ -128,12 +124,12 @@ contract ProjectEscrow is IProjectEscrowEvents {
     /// @param _longitude GPS longitude (scaled by 1e6)
     /// @return proofId ID of the submitted proof
     /// @notice Validates GPS coordinates to prevent invalid data storage
-    function submitWorkProof(
-        uint256 projectId,
-        string calldata _photoHash,
-        int256 _latitude,
-        int256 _longitude
-    ) external projectExists(projectId) onlyKuli(projectId) returns (uint256) {
+    function submitWorkProof(uint256 projectId, string calldata _photoHash, int256 _latitude, int256 _longitude)
+        external
+        projectExists(projectId)
+        onlyKuli(projectId)
+        returns (uint256)
+    {
         ProjectTypes.Project storage project = projects[projectId];
 
         if (project.status != ProjectTypes.Status.Active) revert ProjectNotActive();
@@ -147,16 +143,18 @@ contract ProjectEscrow is IProjectEscrowEvents {
 
         uint256 proofId = nextProofId++;
 
-        projectProofs[projectId].push(ProjectTypes.WorkProof({
-            id: proofId,
-            projectId: projectId,
-            submittedBy: msg.sender,
-            photoHash: _photoHash,
-            latitude: _latitude,
-            longitude: _longitude,
-            timestamp: block.timestamp,
-            verified: false
-        }));
+        projectProofs[projectId].push(
+            ProjectTypes.WorkProof({
+                id: proofId,
+                projectId: projectId,
+                submittedBy: msg.sender,
+                photoHash: _photoHash,
+                latitude: _latitude,
+                longitude: _longitude,
+                timestamp: block.timestamp,
+                verified: false
+            })
+        );
 
         emit WorkProofSubmitted(projectId, proofId, _photoHash);
         return proofId;
@@ -171,11 +169,11 @@ contract ProjectEscrow is IProjectEscrowEvents {
     /// @param projectId ID of the project
     /// @param _proofId ID of the work proof
     /// @param _verified Whether the proof is valid
-    function verifyWorkProof(
-        uint256 projectId,
-        uint256 _proofId,
-        bool _verified
-    ) external onlyAdmin projectExists(projectId) {
+    function verifyWorkProof(uint256 projectId, uint256 _proofId, bool _verified)
+        external
+        onlyAdmin
+        projectExists(projectId)
+    {
         ProjectTypes.Project storage project = projects[projectId];
         ProjectTypes.WorkProof storage proof = projectProofs[projectId][_proofId - 1];
 
@@ -217,7 +215,7 @@ contract ProjectEscrow is IProjectEscrowEvents {
 
         // INTERACTIONS: External call AFTER state updates
         emit PaymentReleased(projectId, project.kuli, amountToRelease, project.daysCompleted);
-        (bool success, ) = project.kuli.call{value: amountToRelease}("");
+        (bool success,) = project.kuli.call{value: amountToRelease}("");
         require(success, "Transfer failed");
 
         if (completed) {
@@ -251,11 +249,11 @@ contract ProjectEscrow is IProjectEscrowEvents {
     /// @param _favorKuli Whether the dispute is resolved in favor of kuli
     /// @param _amount Amount to release (to kuli) or refund (to kontraktor)
     /// @notice Uses Checks-Effects-Interactions pattern to prevent reentrancy
-    function resolveDispute(
-        uint256 projectId,
-        bool _favorKuli,
-        uint256 _amount
-    ) external onlyAdmin projectExists(projectId) {
+    function resolveDispute(uint256 projectId, bool _favorKuli, uint256 _amount)
+        external
+        onlyAdmin
+        projectExists(projectId)
+    {
         ProjectTypes.Project storage project = projects[projectId];
 
         if (project.status != ProjectTypes.Status.Disputed) revert ProjectNotActive();
@@ -273,13 +271,13 @@ contract ProjectEscrow is IProjectEscrowEvents {
             emit PaymentReleased(projectId, project.kuli, _amount, project.daysCompleted);
 
             // INTERACTIONS: External call AFTER state updates
-            (bool success, ) = project.kuli.call{value: _amount}("");
+            (bool success,) = project.kuli.call{value: _amount}("");
             require(success, "Transfer failed");
         } else {
             emit DisputeResolved(projectId, false, _amount);
 
             // INTERACTIONS: External call AFTER state updates
-            (bool success, ) = project.kontraktor.call{value: _amount}("");
+            (bool success,) = project.kontraktor.call{value: _amount}("");
             require(success, "Refund failed");
         }
 
@@ -308,7 +306,7 @@ contract ProjectEscrow is IProjectEscrowEvents {
 
         // INTERACTIONS: External call AFTER state updates
         if (refundAmount > 0) {
-            (bool success, ) = project.kontraktor.call{value: refundAmount}("");
+            (bool success,) = project.kontraktor.call{value: refundAmount}("");
             require(success, "Refund failed");
         }
     }
@@ -320,14 +318,24 @@ contract ProjectEscrow is IProjectEscrowEvents {
     /// @notice Get project details
     /// @param projectId ID of the project
     /// @return Project data
-    function getProject(uint256 projectId) external view projectExists(projectId) returns (ProjectTypes.Project memory) {
+    function getProject(uint256 projectId)
+        external
+        view
+        projectExists(projectId)
+        returns (ProjectTypes.Project memory)
+    {
         return projects[projectId];
     }
 
     /// @notice Get all proofs for a project
     /// @param projectId ID of the project
     /// @return proofs Array of work proofs
-    function getProjectProofs(uint256 projectId) external view projectExists(projectId) returns (ProjectTypes.WorkProof[] memory) {
+    function getProjectProofs(uint256 projectId)
+        external
+        view
+        projectExists(projectId)
+        returns (ProjectTypes.WorkProof[] memory)
+    {
         return projectProofs[projectId];
     }
 

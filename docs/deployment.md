@@ -445,3 +445,56 @@ vercel rollback
 # Netlify
 netlify deploy --prod --dir=.next
 ```
+
+---
+
+## Contract Deployment Checklist
+
+### Prerequisites
+
+| Item | Notes |
+|---|---|
+| **Wallet Deployer** | Address with test POL for gas fees |
+| **Private Key** | Set as `PRIVATE_KEY` in root `.env` |
+| **Test POL** | Get free from https://faucet.polygon.technology/ or https://www.alchemy.com/faucets/polygon-amoy |
+| **forge build** | Compile contracts first |
+
+### Steps
+
+```bash
+# 1. Set PRIVATE_KEY in root .env (NOT the Anvil default)
+#    RPC_URL & CHAIN_ID default to Polygon Amoy, so delete those lines
+#    if you want to use default Amoy (chain 80002)
+
+# 2. Compile contracts
+forge build
+
+# 3. Deploy
+./scripts/deploy.sh
+
+# Script auto-updates:
+#   - backend/.env   → contract addresses + RPC_CHAIN config
+#   - frontend/.env.local → NEXT_PUBLIC_* addresses
+
+# 4. Upload to server
+#    Copy backend/.env + frontend/.env.local to server
+#    restart PM2 processes:
+#      pm2 restart all
+```
+
+### Environment Files (what needs what)
+
+| File | What to set | Purpose |
+|---|---|---|
+| Root `.env` | `PRIVATE_KEY` | Used by `deploy.sh` |
+| `backend/.env` | Auto-filled by deploy script | RPC, chain, contract addresses |
+| `frontend/.env.local` | Auto-filled by deploy script | `NEXT_PUBLIC_*` for frontend |
+
+### Env Inconsistency
+
+Backend `.env` currently set to **Polygon Amoy** (chain 80002). Deploy script also defaults to Amoy. Frontend config hardcoded to Amoy. **Don't mix chains** — all three must match.
+
+### Post-Deploy (Optional)
+
+- Update backend code to call contracts on-chain instead of in-memory store
+- All env vars already populated by deploy script

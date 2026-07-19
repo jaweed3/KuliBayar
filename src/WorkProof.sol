@@ -73,12 +73,10 @@ contract WorkProof is IWorkProofEvents {
     /// @param latitude GPS latitude (scaled by 1e6)
     /// @param longitude GPS longitude (scaled by 1e6)
     /// @return proofId ID of the submitted proof
-    function submitProof(
-        uint256 projectId,
-        string calldata photoHash,
-        int256 latitude,
-        int256 longitude
-    ) external returns (uint256) {
+    function submitProof(uint256 projectId, string calldata photoHash, int256 latitude, int256 longitude)
+        external
+        returns (uint256)
+    {
         uint256 proofId = nextProofId++;
 
         proofs[proofId] = WorkProofTypes.Proof({
@@ -102,10 +100,7 @@ contract WorkProof is IWorkProofEvents {
     /// @notice Verify a proof (AI oracle only)
     /// @param proofId ID of the proof
     /// @param result Whether the proof is valid
-    function verifyProof(
-        uint256 proofId,
-        bool result
-    ) external onlyVerifier proofExists(proofId) {
+    function verifyProof(uint256 proofId, bool result) external onlyVerifier proofExists(proofId) {
         WorkProofTypes.Proof storage proof = proofs[proofId];
 
         if (proof.verified) revert ProofAlreadyVerified();

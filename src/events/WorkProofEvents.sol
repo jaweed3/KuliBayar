@@ -16,9 +16,5 @@ interface IWorkProofEvents {
         uint256 timestamp
     );
 
-    event ProofVerified(
-        uint256 indexed proofId,
-        address indexed verifiedBy,
-        bool result
-    );
+    event ProofVerified(uint256 indexed proofId, address indexed verifiedBy, bool result);
 }

@@ -32,8 +32,8 @@ contract WorkProofTest is Test {
         uint256 proofId = workProof.submitProof(
             1, // projectId
             "QmHash123",
-            6598010,   // latitude * 1e6 (Jakarta)
-            10684530   // longitude * 1e6 (Jakarta)
+            6598010, // latitude * 1e6 (Jakarta)
+            10684530 // longitude * 1e6 (Jakarta)
         );
 
         assertEq(proofId, 1);

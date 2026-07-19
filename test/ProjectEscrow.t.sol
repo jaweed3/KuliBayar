@@ -190,7 +190,8 @@ contract ProjectEscrowTest is Test {
 
         for (uint256 i = 0; i < durationDays; i++) {
             vm.prank(kuli);
-            uint256 proofId = escrow.submitWorkProof(projectId, string(abi.encodePacked("QmHash", i)), 6598010, 10684530);
+            uint256 proofId =
+                escrow.submitWorkProof(projectId, string(abi.encodePacked("QmHash", i)), 6598010, 10684530);
 
             escrow.verifyWorkProof(projectId, proofId, true);
         }

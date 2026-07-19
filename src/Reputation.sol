@@ -105,11 +105,11 @@ contract Reputation is IReputationEvents {
     /// @param profileId ID of the profile to update
     /// @param earnings Amount earned/spent in wei
     /// @param onTime Whether payment was on time
-    function recordJobComplete(
-        uint256 profileId,
-        uint256 earnings,
-        bool onTime
-    ) external onlyTrusted profileExists(profileId) {
+    function recordJobComplete(uint256 profileId, uint256 earnings, bool onTime)
+        external
+        onlyTrusted
+        profileExists(profileId)
+    {
         ReputationTypes.Profile storage profile = profiles[profileId];
 
         profile.totalJobs++;
@@ -124,10 +124,7 @@ contract Reputation is IReputationEvents {
     /// @dev Called by ProjectEscrow contract or admin after job completion
     /// @param profileId ID of the profile to update
     /// @param newRating New rating (100-500, representing 1.0-5.0 stars)
-    function updateRating(
-        uint256 profileId,
-        uint256 newRating
-    ) external onlyTrusted profileExists(profileId) {
+    function updateRating(uint256 profileId, uint256 newRating) external onlyTrusted profileExists(profileId) {
         if (newRating < 100 || newRating > 500) revert InvalidRating();
 
         ReputationTypes.Profile storage profile = profiles[profileId];
@@ -159,7 +156,12 @@ contract Reputation is IReputationEvents {
     /// @notice Get profile by ID
     /// @param profileId ID of the profile
     /// @return Profile data
-    function getProfile(uint256 profileId) external view profileExists(profileId) returns (ReputationTypes.Profile memory) {
+    function getProfile(uint256 profileId)
+        external
+        view
+        profileExists(profileId)
+        returns (ReputationTypes.Profile memory)
+    {
         return profiles[profileId];
     }
 
