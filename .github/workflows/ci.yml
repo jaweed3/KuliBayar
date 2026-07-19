@@ -12,8 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-          persist-credentials: false
         with:
+          persist-credentials: false
+
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
