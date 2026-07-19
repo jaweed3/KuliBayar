@@ -53,6 +53,9 @@ export default function NavigationBar({ activeItem = 'dashboard' }: { activeItem
   const shortenAddress = (a: string) => `${a.slice(0, 6)}...${a.slice(-4)}`;
   const roleName = role === 0 ? 'Kuli' : role === 1 ? 'Kontraktor' : null;
 
+const ADMIN_ADDRESS = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
+const isAdmin = address?.toLowerCase() === ADMIN_ADDRESS.toLowerCase();
+
   // Kuli sees all. Kontraktor doesn't see "Kirim Bukti" or "Kerjaan Saya".
   const allLinks = [
     { href: '/dashboard', key: 'projects', label: 'Proyek Saya', roles: [0, 1] },
@@ -65,6 +68,8 @@ export default function NavigationBar({ activeItem = 'dashboard' }: { activeItem
   const navLinks = role !== null
     ? allLinks.filter(l => l.roles.includes(role))
     : allLinks;
+
+  const adminLink = isAdmin ? [{ href: '/dashboard/admin', key: 'admin', label: 'Admin' }] : [];
 
   return (
     <nav
@@ -83,7 +88,7 @@ export default function NavigationBar({ activeItem = 'dashboard' }: { activeItem
         {/* Desktop Nav */}
         {isAuthenticated && (
           <div className="hidden md:flex items-center space-x-6">
-            {navLinks.map((link) => (
+            {[...navLinks, ...adminLink].map((link) => (
               <Link
                 key={link.key}
                 href={link.href}
@@ -146,7 +151,7 @@ export default function NavigationBar({ activeItem = 'dashboard' }: { activeItem
       {isAuthenticated && (
         <div className={`md:hidden overflow-hidden transition-all duration-300 ${mobileMenuOpen ? 'max-h-80' : 'max-h-0'}`}>
           <div className="container mx-auto px-6 py-4 space-y-1">
-            {navLinks.map((link) => (
+            {[...navLinks, ...adminLink].map((link) => (
               <Link
                 key={link.key}
                 href={link.href}

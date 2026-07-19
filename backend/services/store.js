@@ -15,6 +15,10 @@ let payments = [
 ];
 let nextPaymentId = 6;
 
+let nextProofId = 1;
+
+let proofs = [];
+
 let disputes = [
   { id: 'DISP-0012', projectId: 3, reason: 'Kualitas Buruk', raisedBy: 'kontraktor', date: '02 Sep 2026', result: 'Favor Kuli (50%)', status: 'completed' },
   { id: 'DISP-0005', projectId: 3, reason: 'Foto Tidak Sesuai', raisedBy: 'kuli', date: '15 Agu 2026', result: 'Kompromi', status: 'cancelled' },
@@ -77,4 +81,57 @@ export function updateProject(id, updates) {
   if (idx === -1) return null;
   projects[idx] = { ...projects[idx], ...updates };
   return projects[idx];
+}
+
+// Admin functions
+export function getPendingProofs() {
+  return proofs.filter(p => p.status === 'pending').map(p => ({
+    ...p,
+    projectName: projects.find(pr => pr.id === p.projectId)?.name || `Project #${p.projectId}`,
+  }));
+}
+
+export function getActiveDisputes() {
+  return disputes.filter(d => d.status === 'reviewing').map(d => ({
+    ...d,
+    projectName: projects.find(p => p.id === d.projectId)?.name || `Project #${d.projectId}`,
+  }));
+}
+
+export function addProof(data) {
+  const p = { id: nextProofId++, ...data, status: 'pending', timestamp: new Date().toISOString() };
+  proofs.unshift(p);
+  return p;
+}
+
+export function getProof(id) {
+  return proofs.find(p => p.id === Number(id));
+}
+
+export function updateProof(id, updates) {
+  const idx = proofs.findIndex(p => p.id === Number(id));
+  if (idx === -1) return null;
+  proofs[idx] = { ...proofs[idx], ...updates };
+  return proofs[idx];
+}
+
+export function getStats() {
+  return {
+    totalProjects: projects.length,
+    activeProjects: projects.filter(p => p.status === 'Active').length,
+    pendingProofs: proofs.filter(p => p.status === 'pending').length,
+    activeDisputes: disputes.filter(d => d.status === 'reviewing').length,
+    totalPayments: payments.filter(p => p.status === 'success').length,
+    totalVolume: payments.filter(p => p.status === 'success').reduce((s, p) => s + Number(p.amount), 0).toFixed(3),
+  };
+}
+
+export function resolveDispute(id, favorKuli, amount) {
+  const d = disputes.find(d => d.id === id);
+  if (!d) return null;
+  d.status = 'completed';
+  d.result = favorKuli ? `Favor Kuli (${amount} POL)` : 'Favor Kontraktor';
+  const project = projects.find(p => p.id === d.projectId);
+  if (project) project.status = 'Completed';
+  return d;
 }

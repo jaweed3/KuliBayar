@@ -14,6 +14,7 @@ import challengesRouter from './routes/challenges.js';
 import authRouter from './routes/auth.js';
 import paymentsRouter from './routes/payments.js';
 import disputesRouter from './routes/disputes.js';
+import adminRouter from './routes/admin.js';
 import { initContracts } from './services/blockchain.js';
 import { requireWallet } from './middleware/auth.js';
 
@@ -83,6 +84,7 @@ app.use('/api/matching', requireWallet, matchingRouter);
 app.use('/api/challenges', challengeLimiter, requireWallet, challengesRouter);
 app.use('/api/payments', requireWallet, paymentsRouter);
 app.use('/api/disputes', requireWallet, disputesRouter);
+app.use('/api/admin', requireWallet, adminRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {
