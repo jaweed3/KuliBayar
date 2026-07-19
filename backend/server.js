@@ -12,6 +12,8 @@ import reputationRouter from './routes/reputation.js';
 import matchingRouter from './routes/matching.js';
 import challengesRouter from './routes/challenges.js';
 import authRouter from './routes/auth.js';
+import paymentsRouter from './routes/payments.js';
+import disputesRouter from './routes/disputes.js';
 import { initContracts } from './services/blockchain.js';
 import { requireWallet } from './middleware/auth.js';
 
@@ -79,6 +81,8 @@ app.use('/api/proofs', proofLimiter, requireWallet, proofsRouter);
 app.use('/api/reputation', requireWallet, reputationRouter);
 app.use('/api/matching', requireWallet, matchingRouter);
 app.use('/api/challenges', challengeLimiter, requireWallet, challengesRouter);
+app.use('/api/payments', requireWallet, paymentsRouter);
+app.use('/api/disputes', requireWallet, disputesRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {

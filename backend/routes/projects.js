@@ -3,14 +3,39 @@ import {
   createProject,
   depositFunds,
   startProject,
-  getProject,
+  getProject as getBlockchainProject,
   getBalance,
   raiseDispute,
   resolveDispute,
   cancelProject
 } from '../services/blockchain.js';
+import {
+  getProjectsByRole,
+  getMyWork,
+  getProject,
+} from '../services/store.js';
 
 const router = Router();
+
+// Get projects by role (kontraktor/kuli)
+router.get('/role/:role', async (req, res) => {
+  try {
+    const data = getProjectsByRole(req.params.role);
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get kuli's work projects
+router.get('/my-work', async (req, res) => {
+  try {
+    const data = getMyWork(req.walletAddress);
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Create a new project
 router.post('/', async (req, res) => {

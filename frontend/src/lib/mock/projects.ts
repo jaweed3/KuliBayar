@@ -1,7 +1,4 @@
-// Mock project data for development
-// Switch to real API calls by changing USE_MOCK_DATA to false
-
-export const USE_MOCK_DATA = true;
+import { authFetch } from '@/lib/authFetch';
 
 export interface KontraktorProject {
   id: number;
@@ -31,80 +28,46 @@ export interface KuliProject {
 
 export type Project = KontraktorProject | KuliProject;
 
-export const mockKontraktorProjects: KontraktorProject[] = [
-  {
-    id: 1,
-    name: 'Pondasi Gudang Logistik',
-    location: 'Cikarang, Bekasi',
-    status: 'active',
-    statusLabel: 'Aktif',
-    daysCompleted: 3,
-    durationDays: 10,
-    totalAmount: '0.100',
-    releasedAmount: '0.030',
-    kbId: '#KB-8921',
-  },
-  {
-    id: 2,
-    name: 'Renovasi Ruko Blok A',
-    location: 'Tebet, Jakarta',
-    status: 'created',
-    statusLabel: 'Created',
-    daysCompleted: 0,
-    durationDays: 5,
-    totalAmount: '0.000',
-    releasedAmount: '0.000',
-    kbId: '#KB-8940',
-  },
-  {
-    id: 3,
-    name: 'Pemasangan Keramik Lt 2',
-    location: 'Bintaro, Tangsel',
-    status: 'disputed',
-    statusLabel: 'Sengketa',
-    daysCompleted: 8,
-    durationDays: 12,
-    totalAmount: '0.060',
-    releasedAmount: '0.036',
-    kbId: '#KB-8711',
-  },
-];
+function mapKontraktor(p: any): KontraktorProject {
+  return {
+    id: p.id,
+    name: p.name,
+    location: p.location,
+    status: p.status.toLowerCase(),
+    statusLabel: p.status === 'Active' ? 'Aktif' : p.status === 'Created' ? 'Created' : p.status === 'Disputed' ? 'Sengketa' : 'Selesai',
+    daysCompleted: Number(p.daysCompleted),
+    durationDays: Number(p.durationDays),
+    totalAmount: p.totalAmount || '0',
+    releasedAmount: p.totalReleased || '0',
+    kbId: `#KB-${String(8000 + p.id)}`,
+  };
+}
 
-export const mockKuliProjects: KuliProject[] = [
-  {
-    id: 1,
-    name: 'Pondasi Gudang Logistik',
-    location: 'Cikarang, Bekasi',
-    status: 'active',
-    statusLabel: 'Aktif',
-    daysCompleted: 3,
-    durationDays: 10,
-    dailyRate: '0.010',
-    earned: '0.030',
-    kontraktor: 'Budi S.',
-  },
-  {
-    id: 2,
-    name: 'Renovasi Ruko Blok A',
-    location: 'Tebet, Jakarta',
-    status: 'active',
-    statusLabel: 'Aktif',
-    daysCompleted: 1,
-    durationDays: 5,
-    dailyRate: '0.015',
-    earned: '0.015',
-    kontraktor: 'Ahmad W.',
-  },
-  {
-    id: 3,
-    name: 'Pemasangan Keramik Lt 2',
-    location: 'Bintaro, Tangsel',
-    status: 'pending',
-    statusLabel: 'Menunggu',
-    daysCompleted: 0,
-    durationDays: 12,
-    dailyRate: '0.008',
-    earned: '0.000',
-    kontraktor: 'Dewi L.',
-  },
-];
+function mapKuli(p: any): KuliProject {
+  return {
+    id: p.id,
+    name: p.name,
+    location: p.location,
+    status: p.status === 'Active' ? 'active' : p.status === 'Created' ? 'pending' : 'active',
+    statusLabel: p.status === 'Active' ? 'Aktif' : p.status === 'Created' ? 'Menunggu' : p.status,
+    daysCompleted: Number(p.daysCompleted),
+    durationDays: Number(p.durationDays),
+    dailyRate: p.dailyRate || '0',
+    earned: p.totalReleased || '0',
+    kontraktor: p.kontraktorName || p.kontraktor,
+  };
+}
+
+export async function fetchKontraktorProjects(): Promise<KontraktorProject[]> {
+  const res = await authFetch('/api/projects/role/kontraktor');
+  if (!res.ok) throw new Error('Failed to fetch kontraktor projects');
+  const data = await res.json();
+  return data.map(mapKontraktor);
+}
+
+export async function fetchKuliProjects(): Promise<KuliProject[]> {
+  const res = await authFetch('/api/projects/role/kuli');
+  if (!res.ok) throw new Error('Failed to fetch kuli projects');
+  const data = await res.json();
+  return data.map(mapKuli);
+}
