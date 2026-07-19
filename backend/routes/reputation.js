@@ -1,32 +1,22 @@
 import { Router } from 'express';
 import {
-  createProfile,
-  createKuliProfile,
-  getProfile,
-  getProfileByAddress,
-  isReliable,
-  getOnTimeRate
-} from '../services/blockchain.js';
+  createProfileRecord,
+  getProfileRecord,
+  getProfileRecordByAddress,
+} from '../services/store.js';
 
 const router = Router();
 
 // Create profile
 router.post('/', async (req, res) => {
   try {
-    const { role, useKuliWallet } = req.body;
-
+    const { role, name } = req.body;
     if (role === undefined) {
       return res.status(400).json({ error: 'Missing role (0=Worker, 1=Kontraktor)' });
     }
-
-    // Use separate wallet if specified (for demo: create kontraktor + kuli from different addresses)
-    const profileId = useKuliWallet
-      ? await createKuliProfile(role)
-      : await createProfile(role);
-
+    const profileId = createProfileRecord(req.walletAddress, role, name || '');
     res.json({ success: true, profileId });
   } catch (error) {
-    console.error('Error creating profile:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -34,11 +24,10 @@ router.post('/', async (req, res) => {
 // Get profile by ID
 router.get('/:id', async (req, res) => {
   try {
-    const { id } = req.params;
-    const profile = await getProfile(id);
+    const profile = getProfileRecord(req.params.id);
+    if (!profile) return res.json({ exists: false, id: '0' });
     res.json(profile);
   } catch (error) {
-    console.error('Error getting profile:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -46,35 +35,9 @@ router.get('/:id', async (req, res) => {
 // Get profile by address
 router.get('/address/:address', async (req, res) => {
   try {
-    const { address } = req.params;
-    const profileId = await getProfileByAddress(address);
+    const profileId = getProfileRecordByAddress(req.params.address);
     res.json({ profileId });
   } catch (error) {
-    console.error('Error getting profile by address:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Check reliability
-router.get('/:id/reliable', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const reliable = await isReliable(id);
-    res.json({ reliable });
-  } catch (error) {
-    console.error('Error checking reliability:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Get on-time rate
-router.get('/:id/onTimeRate', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const rate = await getOnTimeRate(id);
-    res.json({ rate });
-  } catch (error) {
-    console.error('Error getting on-time rate:', error);
     res.status(500).json({ error: error.message });
   }
 });

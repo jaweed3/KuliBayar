@@ -139,3 +139,37 @@ export function resolveDispute(id, favorKuli, amount) {
   if (project) project.status = 'Completed';
   return d;
 }
+
+// In-memory profiles (swap to contract reads when deployed)
+let profiles = [];
+let nextProfileId = 1;
+
+export function createProfileRecord(address, role, name) {
+  const existing = profiles.find(p => p.user.toLowerCase() === address.toLowerCase());
+  if (existing) return existing.id;
+
+  const p = {
+    id: String(nextProfileId++),
+    user: address.toLowerCase(),
+    role: String(role),
+    name: name || '',
+    rating: '400',
+    totalJobs: '0',
+    onTimePayments: '0',
+    disputes: '0',
+    totalEarnings: '0',
+    createdAt: String(Date.now()),
+    exists: true,
+  };
+  profiles.push(p);
+  return p.id;
+}
+
+export function getProfileRecord(id) {
+  return profiles.find(p => p.id === id) || null;
+}
+
+export function getProfileRecordByAddress(address) {
+  const p = profiles.find(pr => pr.user.toLowerCase() === address.toLowerCase());
+  return p ? p.id : '0';
+}

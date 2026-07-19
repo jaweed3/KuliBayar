@@ -1,18 +1,22 @@
 'use client';
 
 import { useAuth } from '@/lib/auth';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, role } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.replace('/');
+    if (isLoading) return;
+    if (!isAuthenticated) { router.replace('/'); return; }
+    // Redirect to register if no role, unless already on register page
+    if (role === null && pathname !== '/register') {
+      router.replace('/register');
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, isLoading, role, router, pathname]);
 
   if (isLoading) {
     return (
